@@ -145,3 +145,19 @@ Tono: ayudar, no criticar. Nunca publicar críticas de un negocio con nombre pro
 4. **Presentar la oferta** (resultado, tiempo, garantía, esfuerzo cero).
 5. **Cerrar**: "¿Empezamos esta semana? Me envías logo y fotos y el [FECHA] ya tienes tu web." Cobrar con **Yape/Plin/transferencia**, emitir comprobante.
 6. **Pedir referido** al entregar: "¿A quién más conoces que lo necesite?"
+
+---
+
+## F. Sin portafolio todavía: qué decir mientras tanto
+
+Nunca inventes casos ni reseñas. Honestidad = confianza.
+
+- **En vez de "trabajé con [CASO]":** "Estoy armando mis primeros 5 casos de éxito en odontología y por eso la web te sale **gratis** a cambio de tu testimonio. Te dejo un borrador de cómo se vería la tuya: [LINK MAQUETA]"
+- **Con la maqueta (demo) como prueba:** "Este es un ejemplo de cómo quedaría una web para clínica dental: [LINK DEMO]. La tuya la hago con tu logo, tus fotos y tus servicios."
+- **Si preguntan "¿qué otras webs has hecho?":** "Estoy empezando con clínicas dentales: por eso las primeras 5 son gratis y con garantía de 7 días. Ya tengo dos ejemplos listos [LINK] y te dejo la tuya sin compromiso para que la veas antes de decidir."
+- **Garantía fuerte para compensar el riesgo:** "Si no te gusta el borrador, no pagas ni un sol."
+
+### WhatsApp primer mensaje, versión para dentistas (usa "usted" con doctores)
+> Hola Dr./Dra. [APELLIDO], soy [TU NOMBRE]. Vi su consultorio en Google: [DATO REAL, p. ej. 4.8⭐ con 120 reseñas], excelente.
+> Noté que su ficha no tiene página web, así que quienes buscan "dentista en [DISTRITO]" no pueden ver sus tratamientos ni agendar por ahí. Le preparé un video de 3 minutos con lo que encontré y un borrador de cómo se vería su web: [LINK].
+> Es sin costo ni compromiso, y esta semana solo atiendo 5 consultorios porque cada borrador lo hago yo. ¿Se lo dejo por aquí?

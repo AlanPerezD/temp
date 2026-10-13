@@ -1,0 +1,7 @@
+name,full_address,phone,site,reviews_rating,reviews,type,google_id,business_status
+EJEMPLO Clínica Dental Sonrisa,"Av. Larco 100, Miraflores 15074, Perú",+51 987 654 321,,4.8,150,Dentist,fake1,OPERATIONAL
+EJEMPLO Sonrisa Dental (duplicado),"Av. Larco 100, Miraflores",987654321,,4.8,150,Dentist,fake1,OPERATIONAL
+EJEMPLO Odontología Dra. Pérez,"Calle 2 #45, San Borja",(01) 345-6789,https://instagram.com/ejemplo,4.3,40,Dental clinic,fake2,OPERATIONAL
+EJEMPLO Dental Moderna,"Av. Javier Prado 500, La Molina",912 345 678,https://www.ejemplo-dental.pe,4.9,300,Dentist,fake3,OPERATIONAL
+EJEMPLO Dental Cerrada,"Jr. X, Surco",987000111,,4.0,10,Dentist,fake4,CLOSED_PERMANENTLY
+EJEMPLO Depósito Dental,"Av. Y, Lima",987000333,,4.0,10,Dental supply,fake5,OPERATIONAL

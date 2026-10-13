@@ -2,11 +2,12 @@
 
 Built from *$100M Leads* (Alex Hormozi). The book's core idea: **you get engaged leads by doing the Core Four in volume**, with an offer so good people feel stupid saying no. Everything below is that framework applied to selling websites to pequeños negocios in Peru.
 
-> **Assumptions I made (change any of them, the plan still holds):**
-> - Solo founder/small team, little or no audience yet, no sales team.
-> - Target buyer: owner of a local business who sells through **WhatsApp, Facebook and Instagram** and has no website or a bad one.
-> - Prices below are **placeholders in soles (S/)**. Validate against what your market actually pays.
-> - Language/tone: Peruvian Spanish, informal "tú" (switch to "usted" for older professionals).
+> **Decisions locked in (Oct 2026):**
+> - **Niche/city: dentists and dental clinics in Lima.** Solo founder, **no portfolio yet**, no audience yet, no sales team.
+> - Target buyer: owner of a small/independent clinic who gets patients through **WhatsApp, Facebook, Instagram and Google Maps** and has no website or a weak one.
+> - Prices come from agency benchmarks: see `PRICING.md` (one agency's public prices so far; mystery-shop 5 more before finalizing).
+> - **Lead base comes from Google Maps**, cleaned and scored with the scripts in `leads/` (see `leads/README.md`).
+> - Language/tone: Peruvian Spanish, informal "tú" (switch to "usted" for doctors).
 
 ---
 
@@ -32,8 +33,7 @@ Do this on day 0. Do not skip; every script depends on it.
 ### 1a. One niche, one city
 One offer, one avatar, one platform (Level 1 of the book's roadmap). Pick one and stay there for 30 days.
 
-Good niches for web agencies in Peru: clínicas dentales / estética, salones y spas, talleres mecánicos, gimnasios, academias / institutos, estudios contables y legales, restaurantes con delivery, ferreterías y contratistas.
-**Suggested default: clínicas dentales y estéticas in Lima** (one patient is worth hundreds of soles, so "the site pays for itself with 1 patient" is an easy story). Replace `[NICHO]` and `[CIUDAD]` in the scripts with your pick.
+**Chosen: `[NICHO]` = dentistas / clínicas dentales, `[CIUDAD]` = Lima.** One patient (limpieza, ortodoncia, implante) is worth hundreds of soles, so "the site pays for itself with 1 patient" is an easy story. Start with districts where private clinics concentrate (Miraflores, San Isidro, Surco, San Borja, La Molina, Jesús María, Lince), then widen. Avoid big clinic groups (they have in-house marketing); the cleaner already filters the obvious ones.
 
 ### 1b. The core offer (Grand Slam Offer, value equation)
 Maximize dream outcome + perceived likelihood; minimize time delay + effort.
@@ -47,7 +47,7 @@ Maximize dream outcome + perceived likelihood; minimize time delay + effort.
 | Time delay | 7 días |
 | Effort & sacrifice | Zero. We write the copy, you send logo + photos |
 
-Price ladder (placeholders): setup S/ 1,200 list price + S/ 80/mes hosting, dominio y mantenimiento. **Recurring monthly fee is where the agency value is**; always attach it.
+Pricing: list price **S/ 1,450** (one-page clinic site) + **S/ 90–150/mes** for hosting, domain/SSL, small changes and Google Business Profile upkeep; climb to it with the "first 5 free, then 80% / 60% / 40% / 20% off" ladder. Full benchmark, sources, mystery-shopping checklist and ladder in `PRICING.md`. **The recurring monthly fee is where the agency value is**; always attach it.
 
 ### 1c. The lead magnet (the book's "big fast value")
 Cold strangers don't trust you. Lead with something they'd normally pay for, delivered fast:
@@ -116,7 +116,7 @@ Order from easiest to most manual (the book's software → brokers → elbow gre
 2. **Facebook and Instagram business pages** with WhatsApp-only contact, outdated posts, or a link-in-bio that goes nowhere.
 3. Local directories, chamber of commerce lists, gremio/colegio profesional member lists (e.g., Colegio Odontológico if your niche is dental), Páginas Amarillas.
 
-Capture in `lead-tracker.csv`: name, business, district, phone/WhatsApp, Instagram/Facebook, website?, **one personalization note**.
+**This is now automated: see `leads/README.md`.** `fetch_places.py` pulls clinics by district from the Google Places API (or use an export tool), `clean_leads.py` normalizes Peruvian phones (mobile → `wa.me` link), drops closed/non-dental/institutional/duplicate rows, classifies each clinic's website (none / social / free builder / own), and scores them A/B/C. Then you curate Tier A and B by hand and add a real personal detail. Log outreach in `lead-tracker.csv` (or directly in the clean file, which has the same columns).
 
 ### Problem 2: they ignore you → personalize + big fast value
 - First line proves you know them (a real detail: their rating, a post, a service they offer).
@@ -175,7 +175,7 @@ Block 3–4 focused hours first thing, before anything else. Not done until:
 
 | Days | Focus | Output |
 |---|---|---|
-| 0–1 | Decisions (section 1); build 2 demo sites for your niche from a template; set up WhatsApp Business, tracker, Loom/OBS | Offer, lead magnet, 2 demos |
+| 0–1 | Decisions done (dental, Lima). Run the lead pipeline on 5 districts; mystery-shop 5 agencies for prices; build **2 demo sites** (section 10); set up WhatsApp Business + Loom/OBS | ~500 cleaned leads, price list, 2 demos |
 | 1–10 | Warm outreach 100/day + 1 video/day | 1,000 contacts touched; first 5 free clients accepted |
 | 7–14 | Deliver the free sites in 7 days; ask each for testimonial + video review; build the cold list (1,000 businesses) | 3–5 case studies, list ready |
 | 10–30 | Cold outreach 100/day with personalized video audits; keep content daily | ~30–60 audits sent/day-equivalent, calls booked |
@@ -193,3 +193,17 @@ Block 3–4 focused hours first thing, before anything else. Not done until:
 | Replies but no audit accepted | Hidden costs too high (effort/risk) | Ask "¿qué haría falta para que valga la pena?" and remove that friction |
 | Audits done, no sales | **Sales problem, not an advertising problem** | Review call/DM script, guarantee, price anchoring |
 | Works, but too slow | Not enough volume | More touches/day, more channels, then hire |
+
+---
+
+## 10. No portfolio yet: how to fix it in week 1
+
+Strangers need proof. You have none, so manufacture it fast and honestly:
+
+1. **2 demo sites ("concept" sites)** for a *fictional-but-realistic* clinic, clearly labeled "Demo" or "Concepto", built on a template: hero + WhatsApp button, servicios, equipo, testimonios (placeholders marked as examples), mapa, form de citas, mobile-first, fast. Never present a demo as a real client or fake testimonials.
+2. **Free client #1–#5 = your portfolio.** Pick them from your warm network first (friends/family who know a dentist; the script in `scripts-es.md` A3), not from cold strangers. A friend's dentist is the fastest first yes.
+3. **Before/after of the "audit"**: in the video audit, show their current Google Maps listing vs. a quick mockup of their new home page (Figma/Canva or your template with their logo and 3 photos). The mockup *is* the lead magnet when you have no case studies yet.
+4. After each free site: 60-second video testimonial, screenshot of WhatsApp messages (with permission), Google Search Console/Maps stats if you can show an uplift after 30 days.
+5. Replace `[CASO/DEMO]` in the scripts with the demo link until you have a real case; then switch to the real one with numbers.
+
+**Solo-founder time budget (about 8 working hours):** 3.5 h outreach (100/day) · 1.5 h content (batch-record 5 videos one day a week) · 1 h audits (6 per day × 10 min) · 1 h replies/calls · 1 h building (free sites) . If a free site eats more than 4 h, your template is too custom: cut scope.
