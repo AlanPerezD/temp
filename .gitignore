@@ -3,3 +3,5 @@ leads/data/*
 !leads/data/.gitkeep
 __pycache__/
 *.pyc
+leads/.env
+leads/data/*.done

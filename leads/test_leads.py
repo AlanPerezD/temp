@@ -174,6 +174,46 @@ class Fetch(unittest.TestCase):
         self.assertIn("places.websiteUri", captured["headers"]["x-goog-fieldmask"])
         self.assertIn(b"PE", captured["body"])
 
+    def test_explain_error_hints(self):
+        body = '{"error": {"code": 403, "status": "PERMISSION_DENIED", "message": "Places API (New) has not been used in project 123 before or it is disabled."}}'
+        self.assertIn("Enable 'Places API (New)'", fp.explain_error(403, body))
+        self.assertIn("billing", fp.explain_error(403, '{"error": {"message": "BILLING_DISABLED"}}').lower())
+        self.assertIn("--resume", fp.explain_error(429, '{"error": {"status": "RESOURCE_EXHAUSTED", "message": "Quota exceeded"}}'))
+        self.assertIn("wrong", fp.explain_error(400, '{"error": {"message": "API key not valid. Please pass a valid API key."}}'))
+        self.assertIn("API error 500", fp.explain_error(500, "not json"))
+
+    def test_load_key_env_beats_file(self):
+        with mock.patch.dict(os.environ, {"GOOGLE_MAPS_API_KEY": " from-env "}):
+            self.assertEqual(fp.load_key(), "from-env")
+        with mock.patch.dict(os.environ, {}, clear=True):
+            fake = mock.mock_open(read_data="# c\nGOOGLE_MAPS_API_KEY='from-file'\n")
+            with mock.patch("os.path.exists", return_value=True), mock.patch("builtins.open", fake):
+                self.assertEqual(fp.load_key(), "from-file")
+
+    def test_error_midrun_saves_partial_then_resume_continues(self):
+        place = lambda i: {"id": f"P{i}", "displayName": {"text": f"Dental {i}"}, "formattedAddress": "x"}
+        calls = []
+
+        def flaky(key, q, token=None):
+            calls.append(q)
+            if len(calls) == 3:  # third request hits the daily quota
+                raise fp.ApiError("quota")
+            return {"places": [place(len(calls))]}
+
+        with tempfile.TemporaryDirectory() as d, mock.patch.dict(os.environ, {"GOOGLE_MAPS_API_KEY": "k"}):
+            out = os.path.join(d, "raw.csv")
+            argv = ["--out", out, "--districts", "A", "B", "C", "--queries", "q", "--sleep", "0"]
+            with mock.patch.object(fp, "search", flaky):
+                self.assertEqual(fp.main(argv), 1)  # failed run still writes partial data
+            with open(out, newline="", encoding="utf-8") as f:
+                self.assertEqual(len(list(csv.DictReader(f))), 2)
+            calls.clear()
+            with mock.patch.object(fp, "search", lambda key, q, token=None: (calls.append(q), {"places": [place(99)]})[1]):
+                self.assertEqual(fp.main(argv + ["--resume"]), 0)
+            self.assertEqual(calls, ["q en C, Lima, Perú"])  # only the unfinished query re-ran
+            with open(out, newline="", encoding="utf-8") as f:
+                self.assertEqual(len(list(csv.DictReader(f))), 3)
+
     def test_dry_run_needs_no_key(self):
         self.assertEqual(fp.main(["--dry-run", "--districts", "Miraflores", "--queries", "dentista"]), 0)
 

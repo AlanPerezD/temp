@@ -17,6 +17,7 @@ leads/
 > **Costs and alternatives (Outscraper, Apify, DataForSEO, OSM, etc.): see [`SOURCES.md`](SOURCES.md).** Short version: every route is roughly $0–$20 for a first full Lima pass; pick for convenience.
 
 **Route A: Google Places API (recommended, sanctioned by Google)**
+> **Follow [`GOOGLE_SETUP.md`](GOOGLE_SETUP.md)** for the exact click-by-click setup, spend limits, and troubleshooting. Then `python3 fetch_places.py --test`.
 1. Google Cloud Console → create a project → enable **Places API (New)** → create an API key → restrict it to that API.
 2. Billing must be on. Check the current Maps Platform pricing/free allowance first: phone + website fields are billed at a higher tier. The script has a hard `--max-requests` cap (default 150) as a cost guard.
 3. ```bash
