@@ -30,6 +30,8 @@ leads/
 
 > I wrote and unit-tested this script against the API's documented request/response shape, but I could not call the live API from my environment (no key). Run `--dry-run`, then a tiny first run (`--max-requests 5`), and tell me if Google returns an error.
 
+**Route B (free, no card): Apify.** Step-by-step with ready-to-paste input in [`APIFY_QUICKSTART.md`](APIFY_QUICKSTART.md).
+
 **Route B: a Maps export tool** (Outscraper, Apify "Google Maps Scraper", etc.). Search "dentista en <distrito>, Lima, Perú", export CSV. `clean_leads.py` auto-detects their usual column names. Check the tool's terms; Google's own terms restrict scraping.
 
 **Route C: manual** (zero cost, fine for your first 50–100): copy Name / Address / Phone / Website / Rating / Reviews from Maps into a CSV with those headers.
