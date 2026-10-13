@@ -25,17 +25,19 @@ from urllib.parse import urlparse
 
 # ---------- column detection ----------
 ALIASES = {
-    "place_id": ["place_id", "google_id", "id", "cid", "place_cid"],
+    "place_id": ["place_id", "placeid", "google_id", "id", "cid", "place_cid"],
     "name": ["name", "title", "business_name", "displayname", "nombre"],
     "address": ["address", "full_address", "formatted_address", "direccion", "street"],
     "phone": ["phone", "phone_national", "phone_1", "phones", "telefono", "phone_number"],
     "phone_international": ["phone_international", "international_phone_number"],
-    "website": ["website", "site", "url", "web", "websiteuri", "domain"],
+    # NOTE: never alias bare "url" here: in Apify exports it is the Google Maps link, not the clinic site.
+    "website": ["website", "site", "web", "websiteuri"],
     "rating": ["rating", "reviews_rating", "stars", "totalscore"],
     "reviews": ["reviews", "reviews_count", "user_ratings_total", "reviewscount", "reviews_total"],
     "business_status": ["business_status", "status"],
-    "closed_flag": ["permanently_closed", "temporarily_closed", "is_closed"],
-    "maps_url": ["maps_url", "googlemapsuri", "location_link", "google_maps_url", "link"],
+    "closed_flag": ["permanently_closed", "temporarily_closed", "is_closed",
+                    "permanentlyclosed", "temporarilyclosed"],
+    "maps_url": ["maps_url", "googlemapsuri", "location_link", "google_maps_url", "link", "url"],
     "category": ["primary_type", "category", "type", "main_category", "categoryname"],
     "types": ["types", "categories", "subtypes"],
     "district_col": ["district", "distrito", "city", "neighborhood"],
@@ -60,6 +62,10 @@ def canon_row(raw):
     out = {}
     for canon, names in ALIASES.items():
         out[canon] = ""
+        if canon == "closed_flag":  # several flag columns: closed if ANY is truthy
+            if any(fold(low.get(n, "")) in ("true", "1", "yes", "si") for n in names):
+                out[canon] = "true"
+            continue
         for n in names:
             if low.get(n):
                 out[canon] = low[n]

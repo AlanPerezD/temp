@@ -117,6 +117,33 @@ class Pipeline(unittest.TestCase):
             self.assertEqual(rows[0]["district"], "Miraflores")
 
 
+class Exports(unittest.TestCase):
+    """Column mapping for the two most common Maps export tools."""
+
+    def test_apify_style(self):
+        rows = [
+            {"title": "Dental Apify Uno", "address": "Av. Arequipa 1, Lince", "phone": "+51 987 654 321",
+             "website": "", "url": "https://www.google.com/maps/place/x", "totalScore": "4.6",
+             "reviewsCount": "55", "categoryName": "Dentist", "placeId": "P1",
+             "permanentlyClosed": "false", "temporarilyClosed": "false"},
+            {"title": "Dental Apify Cerrado", "address": "Av. Arequipa 2, Lince", "phone": "987000999",
+             "url": "https://www.google.com/maps/place/y", "categoryName": "Dentist", "placeId": "P2",
+             "permanentlyClosed": "false", "temporarilyClosed": "true"},
+        ]
+        kept, rejected = cl.process([cl.canon_row(r) for r in rows])
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(kept[0]["website_type"], "none")  # Maps link must NOT count as a website
+        self.assertEqual(kept[0]["maps_url"], "https://www.google.com/maps/place/x")
+        self.assertEqual(kept[0]["place_id"], "P1")
+        self.assertEqual([r["reason"] for r in rejected], ["closed"])
+
+    def test_outscraper_style(self):
+        r = cl.canon_row({"name": "D", "full_address": "A, Miraflores", "phone": "987654321", "site": "https://d.pe",
+                          "rating": "4.5", "reviews": "20", "type": "Dentist", "google_id": "G1",
+                          "location_link": "https://maps/x", "business_status": "OPERATIONAL"})
+        self.assertEqual((r["website"], r["rating"], r["reviews"], r["place_id"]), ("https://d.pe", "4.5", "20", "G1"))
+
+
 class Fetch(unittest.TestCase):
     def test_place_to_row(self):
         p = {"id": "X", "displayName": {"text": "Dental X"}, "formattedAddress": "Addr",
