@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Apify",
+      "mcp__Apify__*",
+      "Bash(python3 *)",
+      "Bash(python3 -m unittest *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(wc *)",
+      "Bash(cut *)",
+      "Bash(grep *)",
+      "Bash(sed -n *)",
+      "Bash(jq *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push -u origin ccr-bbdd28b9-1au9g8)",
+      "Bash(git push origin ccr-bbdd28b9-1au9g8)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git push * --force *)",
+      "Bash(git reset --hard *)"
+    ]
+  }
+}
