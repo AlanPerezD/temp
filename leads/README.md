@@ -72,3 +72,10 @@ Then work the list **top-down**: Tier A first, 100 touches/day (see `../PLAN.md`
 ## Compliance reminders
 - It's business contact data already public on Maps, used for one-to-one B2B outreach: personalize, offer an opt-out, never bulk-blast WhatsApp. See the cautions in `../PLAN.md` (Ley 29733 on personal data; verify with a lawyer/contador).
 - Keep `data/` private: it contains phone numbers (it is git-ignored).
+
+## Sending the WhatsApp batch (paced, you tap send)
+```bash
+python3 make_outreach.py --sender "Your name" --limit 30   # builds data/outreach_batch1.csv
+python3 send_queue.py                                       # on YOUR computer: opens one chat at a time
+```
+`send_queue.py` opens each chat with the message pre-filled; you press send and confirm. It enforces a daily cap (25), working hours (9–18 Lima) and a random 4–9 min pause, and saves progress in the CSV. It never sends anything itself on purpose: WhatsApp's Business Platform only allows business-initiated messages to opted-in contacts with approved templates, and unofficial bots risk banning your number. Start at 10–15 a day for the first week.

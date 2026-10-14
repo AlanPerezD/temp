@@ -8,6 +8,8 @@ import clean_leads as cl
 import fetch_places as fp
 import fetch_apify as fa
 import make_outreach as mo
+import send_queue as sq
+from datetime import datetime, timezone, timedelta
 
 
 class Phones(unittest.TestCase):
@@ -236,6 +238,57 @@ class Outreach(unittest.TestCase):
         self.assertIn("dentista en Lima", mo.build_message(self.ROWS[2], "Alan"))  # unknown district fallback
         link = mo.wa_link("+51987654321", "hola ñ\n1")
         self.assertTrue(link.startswith("https://wa.me/51987654321?text=hola%20%C3%B1%0A1"))
+
+
+class SendQueue(unittest.TestCase):
+    def rows(self, n=4):
+        return [{"name": f"C{i}", "district": "X", "phone": f"+5198000000{i}", "wa_link": f"https://wa.me/{i}", "sent": ""}
+                for i in range(n)]
+
+    def lima(self, h):  # a UTC datetime that is hour h in Lima
+        return datetime(2026, 10, 14, h + 5, 0, tzinfo=timezone.utc)
+
+    def test_hours_and_delay(self):
+        self.assertTrue(sq.in_hours(self.lima(10), 9, 18))
+        self.assertFalse(sq.in_hours(self.lima(8), 9, 18))
+        self.assertFalse(sq.in_hours(self.lima(18), 9, 18))
+        import random
+        d = [sq.delay_seconds(random.Random(i), 4, 9) for i in range(50)]
+        self.assertTrue(all(240 <= x <= 540 for x in d))
+        self.assertGreater(len(set(d)), 40)  # actually randomized
+
+    def run_queue(self, argv, answers, hour=10, rows=None):
+        opened, slept = [], []
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "b.csv")
+            sq.save(path, rows or self.rows())
+            it = iter(answers)
+            rc = sq.main(["--batch", path] + argv, now_fn=lambda: self.lima(hour), sleep=slept.append,
+                         ask=lambda _: next(it), opener=opened.append)
+            return rc, opened, slept, sq.load(path)
+
+    def test_cap_stops_and_pauses_between(self):
+        rc, opened, slept, rows = self.run_queue(["--daily-cap", "2"], ["", "", ""])
+        self.assertEqual(rc, 0)
+        self.assertEqual(len(opened), 2)          # cap respected
+        self.assertEqual(len(slept), 2)           # a pause after each send
+        self.assertTrue(all(240 <= s <= 540 for s in slept))
+        self.assertEqual(sum(1 for r in rows if r["sent"]), 2)
+
+    def test_skip_quit_and_outside_hours(self):
+        rc, opened, slept, rows = self.run_queue([], ["s", "q"])
+        self.assertEqual(len(opened), 2)
+        self.assertTrue(rows[0]["sent"].startswith("skipped"))
+        self.assertEqual(rows[1]["sent"], "")     # quit leaves it pending
+        self.assertEqual(slept, [])               # no pause after skip/quit
+        rc, opened, slept, rows = self.run_queue([], [], hour=7)
+        self.assertEqual(opened, [])              # nothing opened outside working hours
+
+    def test_resume_skips_already_sent(self):
+        rows = self.rows(3)
+        rows[0]["sent"] = self.lima(9).astimezone(sq.LIMA).isoformat(timespec="minutes")
+        rc, opened, slept, out = self.run_queue(["--daily-cap", "10"], ["", ""], rows=rows)
+        self.assertEqual(opened, ["https://wa.me/1", "https://wa.me/2"])
 
 
 class Fetch(unittest.TestCase):
