@@ -29,7 +29,7 @@ ALIASES = {
     "name": ["name", "title", "business_name", "displayname", "nombre"],
     "address": ["address", "full_address", "formatted_address", "direccion", "street"],
     "phone": ["phone", "phone_national", "phone_1", "phones", "telefono", "phone_number"],
-    "phone_international": ["phone_international", "international_phone_number"],
+    "phone_international": ["phone_international", "international_phone_number", "phoneunformatted"],
     # NOTE: never alias bare "url" here: in Apify exports it is the Google Maps link, not the clinic site.
     "website": ["website", "site", "web", "websiteuri"],
     "rating": ["rating", "reviews_rating", "stars", "totalscore"],

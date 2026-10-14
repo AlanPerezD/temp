@@ -6,6 +6,7 @@ from unittest import mock
 
 import clean_leads as cl
 import fetch_places as fp
+import fetch_apify as fa
 
 
 class Phones(unittest.TestCase):
@@ -142,6 +143,59 @@ class Exports(unittest.TestCase):
                           "rating": "4.5", "reviews": "20", "type": "Dentist", "google_id": "G1",
                           "location_link": "https://maps/x", "business_status": "OPERATIONAL"})
         self.assertEqual((r["website"], r["rating"], r["reviews"], r["place_id"]), ("https://d.pe", "4.5", "20", "G1"))
+
+
+class ApifyRunner(unittest.TestCase):
+    def test_build_input(self):
+        i = fa.build_input("Miraflores", ["dentista"], 40)
+        self.assertEqual(i["locationQuery"], "Miraflores, Lima, Perú")
+        self.assertEqual((i["language"], i["countryCode"], i["skipClosedPlaces"]), ("es", "pe", True))
+        self.assertNotIn("maxReviews", i)  # reviews are the biggest cost driver
+
+    def test_dry_run_and_missing_token(self):
+        self.assertEqual(fa.main(["--dry-run"]), 0)
+        with mock.patch.dict(os.environ, {}, clear=True), mock.patch("os.path.exists", return_value=False):
+            with self.assertRaises(SystemExit):
+                fa.main(["--test"])
+
+    def test_full_flow_with_budget_and_csv_roundtrip(self):
+        names = {1: "Sonrisa Alfa", 2: "Odontosalud Beta"}
+        item = lambda n, pid: {"title": names[n], "address": "Av. X 1, Miraflores", "phone": f"987 654 32{n}",
+                               "phoneUnformatted": f"+5198765432{n}", "website": None, "totalScore": 4.7,
+                               "reviewsCount": 50, "categoryName": "Dentist", "categories": ["Dentist", "Clinic"],
+                               "placeId": pid, "url": "https://maps/" + pid, "permanentlyClosed": False,
+                               "temporarilyClosed": False}
+        calls = []
+
+        def fake_api(method, path, token, body=None, params=None):
+            calls.append((method, path, params))
+            if method == "POST" and path.endswith("/runs"):
+                return {"data": {"id": "R", "status": "RUNNING", "defaultDatasetId": "D"}}
+            if path.startswith("/actor-runs/"):
+                return {"data": {"id": "R", "status": "SUCCEEDED", "defaultDatasetId": "D", "usageTotalUsd": 1.5}}
+            return [item(1, "A"), item(2, "B"), item(2, "B")]  # duplicate placeId within run
+
+        with tempfile.TemporaryDirectory() as d, mock.patch.dict(os.environ, {"APIFY_TOKEN": "t"}), \
+                mock.patch.object(fa, "api", fake_api):
+            out = os.path.join(d, "o.csv")
+            # budget $2: first run costs $1.5, second would start with only $0.5 cap, third is skipped
+            self.assertEqual(fa.main(["--districts", "Miraflores", "San Isidro", "La Molina", "--budget-usd", "2",
+                                      "--out", out]), 0)
+            starts = [c for c in calls if c[0] == "POST" and c[1].endswith("/runs")]
+            self.assertEqual(len(starts), 2)
+            self.assertAlmostEqual(starts[1][2]["maxTotalChargeUsd"], 0.5)
+            with open(out, newline="", encoding="utf-8") as f:
+                rows = list(csv.DictReader(f))
+            self.assertEqual(len(rows), 2)  # deduped by placeId across runs
+            # the cleaner must accept this file as-is and not mistake the Maps url for a website
+            kept, _ = cl.process([cl.canon_row(r) for r in rows])
+            self.assertEqual(len(kept), 2)
+            self.assertEqual(kept[0]["website_type"], "none")
+            self.assertEqual(sorted(r["phone"] for r in kept), ["+51987654321", "+51987654322"])
+
+    def test_explain_hints(self):
+        self.assertIn("Token", fa.explain(401, '{"error": {"message": "User was not found or authentication token is not valid"}}'))
+        self.assertIn("credit", fa.explain(402, '{"error": {"message": "Monthly usage hard limit exceeded"}}'))
 
 
 class Fetch(unittest.TestCase):

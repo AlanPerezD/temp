@@ -43,3 +43,24 @@ python3 clean_leads.py data/dataset_*.csv -o data/leads_clean.csv --rejected dat
 | **Serper.dev** | 2,500 queries on signup | No (per their page); Maps cost per query unverified |
 
 Practical plan: use **Apify's $5** now (no risk), then **Outscraper's 500** for a second batch if you want, and keep the Google API (already scripted, `GOOGLE_SETUP.md`) as the monthly refresh once you have a card you're comfortable with.
+
+---
+
+## Let Claude run it (no copy-paste of CSVs): `fetch_apify.py`
+
+Instead of using the Apify website, the runner calls Apify's API with the same actor and the same input as above, with **three spending caps** (places per search, `$` per run, `$` total). It prints the *real* price per 1,000 places after each run.
+
+1. Apify Console → **Settings → API & Integrations** → copy your **API token** (a password; **never paste it in chat**).
+2. **On your computer:** `echo 'APIFY_TOKEN=...' >> leads/.env`, then:
+   ```bash
+   python3 fetch_apify.py --test        # 1 district, 5 places, $0.50 cap
+   python3 fetch_apify.py               # 5 best districts, $4 total budget
+   python3 clean_leads.py data/apify_places.csv
+   ```
+3. **In this Claude session:** add `APIFY_TOKEN` as an environment variable in the cloud environment's settings (environment menu in the session title bar → Edit; use "Network secrets" if offered), start a **new session**, and tell me. I'll run `--test`, look at the output with you, then the full pull, clean it, and send you the CSV. I confirmed this environment can reach `api.apify.com`.
+
+## "Is there an MCP for this?"
+
+- **Apify has an official MCP server**: hosted at `https://mcp.apify.com` (OAuth login) or local via `npx -y @apify/actors-mcp-server` with `APIFY_TOKEN`. It lets an assistant search Apify's Store and run any Actor. It is **not** in the claude.ai connector directory I can see, and nothing is connected in this session. To use it you'd add it yourself as a custom connector at <https://claude.ai/customize/connectors> and start a new session.
+- **Honest comparison:** for *this* job the runner script is better than the MCP: same actor, same data, but with hard cost caps and a repeatable CSV. The MCP is useful later to explore *other* Apify actors (Facebook pages, Instagram profiles, website contact finders).
+- **Browser-driving MCPs** (Playwright MCP, Browserbase, Chrome DevTools MCP, Firecrawl MCP) are good for *visiting* sites, e.g., checking a clinic's site speed or taking screenshots for your audit videos. They are the wrong tool for bulk Google Maps: fragile, against Google's terms, and cloud IPs get blocked. (Popularity claims in articles are from vendor blogs; I didn't verify star counts.)
