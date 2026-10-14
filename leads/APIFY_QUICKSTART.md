@@ -2,7 +2,10 @@
 
 Apify's **Free plan gives $5 of usage per month, no credit card required**, and the credit renews each monthly cycle (unused credit expires; verified on apify.com/pricing, 13 Oct 2026). Its "Google Maps Scraper" actor is `compass/crawler-google-places`.
 
-## What $5 buys (an estimate, not a promise)
+## Real pricing (read from the actor's pricing, Oct 2026)
+On the Free plan: **$0.004 per place**, **+$0.001 per place for each filter** you turn on (e.g. `website`, `skipClosedPlaces`), +$0.002 for contact enrichment. We use only the `website: withoutWebsite` filter ($0.005/place, ≈ **$5 per 1,000 places**, so the $5 credit ≈ 1,000 places) and skip `skipClosedPlaces` because `clean_leads.py` removes closed places for free. Live test: 5 Lima districts × 80 places ≈ $2.
+
+## What $5 buys (older estimate, superseded by the real pricing above)
 The actor is billed per place. Apify lists "from $1.50 per 1,000 places" but that is the *best-plan* price; **the Free-plan rate isn't shown on the page I could read**, and one third-party claim says $4–7 per 1,000 (unverified). So $5 ≈ **700 to 3,300 places**. Check the real rate after your first run (the run page shows "Total cost").
 
 That is enough for a good first batch: after the cleaner removes closed/non-dental/duplicate rows, expect a fraction of those to be usable leads, mostly Tier A/B.
@@ -19,7 +22,7 @@ That is enough for a good first batch: after the cleaner removes closed/non-dent
   "maxCrawledPlacesPerSearch": 40,
   "language": "es",
   "countryCode": "pe",
-  "skipClosedPlaces": true
+  "website": "withoutWebsite"
 }
 ```
    - Leave **enrichments off** (contacts, social profiles, leads, reviews). They cost extra per place; reviews are the biggest cost driver.

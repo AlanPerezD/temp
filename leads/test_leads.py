@@ -7,6 +7,7 @@ from unittest import mock
 import clean_leads as cl
 import fetch_places as fp
 import fetch_apify as fa
+import make_outreach as mo
 
 
 class Phones(unittest.TestCase):
@@ -138,6 +139,18 @@ class Exports(unittest.TestCase):
         self.assertEqual(kept[0]["place_id"], "P1")
         self.assertEqual([r["reason"] for r in rejected], ["closed"])
 
+    def test_tsv_and_maps_url_from_place_id(self):
+        with tempfile.TemporaryDirectory() as d:
+            src = os.path.join(d, "in.tsv")
+            with open(src, "w", encoding="utf-8") as f:
+                f.write("title\taddress\tphoneUnformatted\ttotalScore\treviewsCount\tcategoryName\tplaceId\tpermanentlyClosed\ttemporarilyClosed\n")
+                f.write("Dr. Perez, Odontólogo\tAv. Larco 1, Miraflores\t+51987654321\t4.8\t30\tDentista\tPID1\t\t\n")
+            rows = cl.read_inputs([src])
+            kept, _ = cl.process(rows)
+            self.assertEqual(len(kept), 1)
+            self.assertEqual(kept[0]["name"], "Dr. Perez, Odontólogo")
+            self.assertTrue(kept[0]["maps_url"].endswith("place_id:PID1"))
+
     def test_outscraper_style(self):
         r = cl.canon_row({"name": "D", "full_address": "A, Miraflores", "phone": "987654321", "site": "https://d.pe",
                           "rating": "4.5", "reviews": "20", "type": "Dentist", "google_id": "G1",
@@ -149,7 +162,8 @@ class ApifyRunner(unittest.TestCase):
     def test_build_input(self):
         i = fa.build_input("Miraflores", ["dentista"], 40)
         self.assertEqual(i["locationQuery"], "Miraflores, Lima, Perú")
-        self.assertEqual((i["language"], i["countryCode"], i["skipClosedPlaces"]), ("es", "pe", True))
+        self.assertEqual((i["language"], i["countryCode"], i["website"]), ("es", "pe", "withoutWebsite"))
+        self.assertNotIn("skipClosedPlaces", i)  # paid filter; the cleaner drops closed places for free
         self.assertNotIn("maxReviews", i)  # reviews are the biggest cost driver
 
     def test_dry_run_and_missing_token(self):
@@ -196,6 +210,32 @@ class ApifyRunner(unittest.TestCase):
     def test_explain_hints(self):
         self.assertIn("Token", fa.explain(401, '{"error": {"message": "User was not found or authentication token is not valid"}}'))
         self.assertIn("credit", fa.explain(402, '{"error": {"message": "Monthly usage hard limit exceeded"}}'))
+
+
+class Outreach(unittest.TestCase):
+    ROWS = [
+        {"tier": "A", "score": "90", "name": "Dental Uno", "district": "San Borja", "phone": "+51987654321",
+         "phone_type": "mobile", "rating": "5.0", "reviews": "112", "maps_url": "u1"},
+        {"tier": "A", "score": "80", "name": "Dental Fijo", "district": "Miraflores", "phone": "+5112345678",
+         "phone_type": "landline_lima", "rating": "", "reviews": "", "maps_url": "u2"},
+        {"tier": "B", "score": "60", "name": "Dental Tres", "district": "", "phone": "+51912345678",
+         "phone_type": "mobile", "rating": "", "reviews": "", "maps_url": "u3"},
+    ]
+
+    def test_select_only_mobile_and_exclude(self):
+        self.assertEqual([r["name"] for r in mo.select(self.ROWS, 10)], ["Dental Uno", "Dental Tres"])
+        self.assertEqual([r["name"] for r in mo.select(self.ROWS, 10, exclude={"+51987654321"})], ["Dental Tres"])
+        self.assertEqual([r["name"] for r in mo.select(self.ROWS, 10, min_reviews=50)], ["Dental Uno"])
+
+    def test_message_and_link(self):
+        m = mo.build_message(self.ROWS[0], "Alan")
+        self.assertIn("5.0⭐ con 112 reseñas", m)
+        self.assertIn("dentista en San Borja", m)
+        self.assertIn("no le escriba más", m)  # opt-out line
+        self.assertIn("su consultorio en Google", mo.build_message(self.ROWS[2], "Alan"))
+        self.assertIn("dentista en Lima", mo.build_message(self.ROWS[2], "Alan"))  # unknown district fallback
+        link = mo.wa_link("+51987654321", "hola ñ\n1")
+        self.assertTrue(link.startswith("https://wa.me/51987654321?text=hola%20%C3%B1%0A1"))
 
 
 class Fetch(unittest.TestCase):

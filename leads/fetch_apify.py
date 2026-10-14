@@ -93,8 +93,11 @@ def build_input(district, searches, max_per_search):
         "maxCrawledPlacesPerSearch": max_per_search,
         "language": "es",
         "countryCode": "pe",
-        "skipClosedPlaces": True,
-        # enrichments stay OFF (they cost extra per place); reviews are the biggest cost driver
+        # Only clinics WITHOUT a website: the ones we can sell to. Costs +$0.001/place on the Free plan
+        # but we then pay only for relevant places (verified live: Free plan = $0.004/place + $0.001 per filter).
+        "website": "withoutWebsite",
+        # NOT skipClosedPlaces: it is a paid filter and clean_leads.py drops closed places for free.
+        # Enrichments stay OFF (extra per place); reviews are the biggest cost driver.
     }
 
 

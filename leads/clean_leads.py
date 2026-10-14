@@ -294,7 +294,8 @@ def process(rows, extra_exclude=()):
             "other_phones": "; ".join(p for p, _ in phones[1:]),
             "website": c["website"] if wtype == "own" else "", "website_type": wtype, "social": social,
             "rating_f": to_float(c["rating"]), "reviews_i": to_int(c["reviews"]),
-            "maps_url": c["maps_url"], "place_id": c["place_id"],
+            "maps_url": c["maps_url"] or (f"https://www.google.com/maps/place/?q=place_id:{c['place_id']}" if c["place_id"] else ""),
+            "place_id": c["place_id"],
         }
         r["rating"], r["reviews"] = (r["rating_f"] or ""), (r["reviews_i"] or "")
         r["_tokens"] = name_tokens(name)
@@ -336,10 +337,13 @@ def read_inputs(paths):
         with open(p, newline="", encoding="utf-8-sig") as f:
             sample = f.read(4096)
             f.seek(0)
-            try:
-                dialect = csv.Sniffer().sniff(sample, delimiters=",;\t")
-            except csv.Error:
-                dialect = csv.excel
+            if p.lower().endswith(".tsv"):
+                dialect = csv.excel_tab
+            else:
+                try:
+                    dialect = csv.Sniffer().sniff(sample, delimiters=",;\t")
+                except csv.Error:
+                    dialect = csv.excel
             rows.extend(canon_row(r) for r in csv.DictReader(f, dialect=dialect))
     return rows
 
