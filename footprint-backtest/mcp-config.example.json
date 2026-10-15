@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "databento": {
+      "command": "databento-mcp",
+      "args": [],
+      "env": { "DATABENTO_API_KEY": "${DATABENTO_API_KEY}" }
+    }
+  }
+}

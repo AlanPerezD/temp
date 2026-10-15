@@ -1,0 +1,6 @@
+# downloaded market data and secrets stay local
+data/*
+!data/.gitkeep
+.env
+__pycache__/
+*.pyc
