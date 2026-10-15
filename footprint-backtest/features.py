@@ -54,8 +54,9 @@ def bar_summary(trades, levels, freq="1min", ratio=3.0, min_vol=1):
 
 def book_imbalance(mbp):
     """Top-10 depth imbalance in [-1, 1] per row: (bid - ask) / (bid + ask)."""
-    bid = sum(mbp[f"bid_sz_{i:02d}"] for i in range(10))
-    ask = sum(mbp[f"ask_sz_{i:02d}"] for i in range(10))
+    # sizes are uint32 in DBN files; cast first or the subtraction wraps around
+    bid = sum(mbp[f"bid_sz_{i:02d}"].astype("float64") for i in range(10))
+    ask = sum(mbp[f"ask_sz_{i:02d}"].astype("float64") for i in range(10))
     return (bid - ask) / (bid + ask).where(bid + ask > 0)
 
 

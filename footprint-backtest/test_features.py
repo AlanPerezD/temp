@@ -56,6 +56,12 @@ class FootprintTests(unittest.TestCase):
         self.assertAlmostEqual(imb[0], (120 - 100) / 220)
         self.assertTrue(pd.isna(imb[1]))
 
+    def test_book_imbalance_unsigned_sizes(self):
+        cols = {f"bid_sz_{i:02d}": pd.Series([1], dtype="uint32") for i in range(10)}
+        cols.update({f"ask_sz_{i:02d}": pd.Series([5], dtype="uint32") for i in range(10)})
+        imb = features.book_imbalance(pd.DataFrame(cols))
+        self.assertAlmostEqual(imb[0], -40 / 60)
+
     def test_jsonl_roundtrip(self):
         import json
         with tempfile.NamedTemporaryFile("r", suffix=".jsonl") as f:
