@@ -5,9 +5,8 @@
     python3 send_queue.py --daily-cap 25 --min-minutes 4 --max-minutes 9 --hours 9-18
 
 For each pending lead it opens WhatsApp (Web/Desktop/phone) with the message pre-filled; YOU read it and
-press send, then confirm here. It never sends anything by itself, so there is no unofficial automation,
-and it enforces the habits that keep a business number healthy: a daily cap, working hours (Lima time),
-and a random pause between chats. Progress is saved in the CSV (`sent` column), so you can stop and resume.
+press send, then confirm here. Sending is always done by you, by hand. It enforces good habits for a
+business number: a daily cap, working hours (Lima time), and a pause between chats. Progress is saved in the CSV (`sent` column), so you can stop and resume.
 """
 import argparse
 import csv

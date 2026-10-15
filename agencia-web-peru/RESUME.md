@@ -1,0 +1,45 @@
+# RESUME: lead generation for a web agency (dental clinics, Lima, Peru)
+
+Read this first in a new session. Last updated 2026-10-15.
+
+## Goal and decisions
+- Solo founder selling **websites to small dental clinics in Lima** (no portfolio yet). Method: Hormozi's *$100M Leads* (Core Four: warm outreach → content → cold outreach → ads), adapted to Peru.
+- **Offer:** one-page clinic site + WhatsApp button + Google Maps + booking form, ready in 7 days, or no pay. List price **S/ 1,450 + S/ 90–150/month**; ladder: first 5 free (for testimonials), then 80/60/40/20 % off, climbing every 5 clients (`PRICING.md`).
+- **Lead magnet:** free mini audit of the clinic's Google listing + homepage mockup.
+- **Language/tone:** Peruvian Spanish, "usted" for doctors.
+- User preferences: wants things done **autonomously, without questions**; low spend (free tiers).
+
+## What exists (all under `agencia-web-peru/`)
+| File | Purpose |
+|---|---|
+| `PLAN.md` | Full strategy: offer, Core Four, 30-day schedule, no-portfolio plan (§10) |
+| `scripts-es.md` | Spanish scripts: warm, content hooks, cold, objections, sales call, no-portfolio wording |
+| `PRICING.md`, `pricing-benchmark.csv` | Agency price research (mostly one agency, KOM) + price ladder; benchmark sheet to fill |
+| `INBOUND.md` | Click-to-WhatsApp ads, WhatsApp Business app setup, reply playbook |
+| `lead-tracker.csv`, `daily-scorecard.csv` | Templates to log outreach and daily numbers |
+| `leads/` | Lead pipeline (Python stdlib, 27 tests): see below |
+
+### Lead pipeline (`leads/`)
+- `fetch_apify.py` (Apify REST API with spend caps) · `fetch_places.py` (Google Places API, needs a key) · `clean_leads.py` (phones → +51, dedupe, website type, A/B/C score) · `make_outreach.py` (30 messages with pre-filled `wa.me` links) · `send_queue.py` (paced queue: opens one chat at a time, **the human presses send**).
+- Docs: `leads/README.md`, `SOURCES.md` (costs of each data source), `APIFY_QUICKSTART.md`, `GOOGLE_SETUP.md`.
+- Run tests: `cd agencia-web-peru/leads && python3 -m unittest test_leads`.
+
+## State of the data (NOT in git: `leads/data/` is git-ignored because it has phone numbers)
+- Pulled with the **Apify MCP** (`mcp__Apify__*`, actor `compass/crawler-google-places`): Miraflores, San Isidro, Surco, San Borja, La Molina → **278 clean leads** (125 tier A, 224 WhatsApp mobiles, all without a website), first batch of 30 outreach messages (sender name "Alan", change with `make_outreach.py --sender`).
+- Files `leads_clean.csv`, `outreach_batch1.md/csv` were also sent to the user as attachments. **If `leads/data/` is missing in a new session, re-pull** (≈ $2 of Apify credit) or ask the user for the files.
+- Apify real pricing (Free plan): **$0.004/place + $0.001 per filter**; $5 free credit/month, ≈ $2 used so far. Use `"website": "withoutWebsite"`; do NOT enable `skipClosedPlaces` (paid; the cleaner removes closed places for free). Results overlap between neighbouring districts.
+- Districts not yet pulled: Jesús María, Lince, Surquillo, Magdalena, Pueblo Libre, San Miguel, Barranco, Chorrillos, Los Olivos.
+
+## Working rules
+- Outreach to strangers is sent **by the user, by hand** (paced queue, 10–25 a day, 9–18 Lima time, with opt-out line). Prefer **inbound** (`INBOUND.md`): ads, organic "Comenta AUDITORÍA" videos, then reply to whoever writes.
+- Keep lead data local (git-ignored). Spend only within Apify's free credit.
+- Cautions (not legal advice): Peru data-protection law 29733 and anti-spam law 28493 apply; keep outreach B2B, personalized, with opt-out.
+
+## Next steps (in priority order)
+1. User sends the first batch (10–15/day) via `send_queue.py` or the links in `outreach_batch1.md`; log replies.
+2. Draft audits and replies for every clinic that answers (use `scripts-es.md` §A2, D, E).
+3. Build the 2 demo sites and the homepage-mockup lead magnet (`PLAN.md` §10).
+4. Write week-1 content scripts (daily short video, CTA "Comenta AUDITORÍA").
+5. Set up Click-to-WhatsApp ads (`INBOUND.md`) once the user has a Meta ad account.
+6. Mystery-shop 5 agencies and fill `pricing-benchmark.csv`.
+7. Pull more districts when the first 278 are worked.

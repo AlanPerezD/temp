@@ -1,7 +1,6 @@
 # real scraped lead data stays local (business phone numbers, etc.)
-leads/data/*
-!leads/data/.gitkeep
+agencia-web-peru/leads/data/*
+!agencia-web-peru/leads/data/.gitkeep
+agencia-web-peru/leads/.env
 __pycache__/
 *.pyc
-leads/.env
-leads/data/*.done
