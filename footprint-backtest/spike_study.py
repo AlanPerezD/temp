@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 
 HORIZONS = (5, 15, 60)  # minutes
+GAP_NS = 10 * 60 * 10**9  # a horizon landing in a gap longer than this is dropped
 
 
 def spike_bars(trades, vol_min=1500, move_min=0.25, bar="5min"):
@@ -46,11 +47,17 @@ def forward(trades, bars, bar="5min", delay_s=5, tick=0.01, cost_ticks=2):
         cost = cost_ticks * tick / entry * 100
         row = {"bar": start, "vol": r["vol"], "move_pct": r["move_pct"], "side": side}
         for m in HORIZONS:
-            j = min(np.searchsorted(ts, ts[i0] + m * 60 * 10**9, side="right") - 1, len(ts) - 1)
-            row[f"ret{m}"] = (px[j] - entry) / entry * 100 * side  # >0 = spike continued
+            target = ts[i0] + m * 60 * 10**9
+            j = np.searchsorted(ts, target, side="right") - 1
+            # the horizon must fall inside the data (not past the window end / a gap)
+            nxt = ts[j + 1] if j + 1 < len(ts) else None
+            covered = (nxt is not None and nxt - target <= GAP_NS) or (nxt is None and target - ts[j] <= GAP_NS)
+            row[f"ret{m}"] = (px[j] - entry) / entry * 100 * side if covered else np.nan  # >0 = spike continued
         j60 = np.searchsorted(ts, ts[i0] + 60 * 60 * 10**9, side="right")
         path = (px[i0:j60] - entry) / entry * 100 * side
-        row["mfe_follow"], row["mae_follow"] = path.max(), -path.min()  # follow: up = good
+        ok = not np.isnan(row["ret60"])
+        row["mfe_follow"] = path.max() if ok else np.nan  # follow: up = good
+        row["mae_follow"] = -path.min() if ok else np.nan
         row["cost"] = cost
         rows.append(row)
     return pd.DataFrame(rows)
@@ -61,9 +68,10 @@ def report(f, label):
         print(label, "no events"); return
     print(f"\n{label}: {len(f)} events")
     for m in HORIZONS:
-        fade = -f[f"ret{m}"] - f["cost"]
-        follow = f[f"ret{m}"] - f["cost"]
-        print(f"  {m:>2}m  FADE avg {fade.mean():+.3f}% win {(fade > 0).mean():.0%} | "
+        d = f.dropna(subset=[f"ret{m}"])
+        fade = -d[f"ret{m}"] - d["cost"]
+        follow = d[f"ret{m}"] - d["cost"]
+        print(f"  {m:>2}m (n={len(d)}) FADE avg {fade.mean():+.3f}% win {(fade > 0).mean():.0%} | "
               f"FOLLOW avg {follow.mean():+.3f}% win {(follow > 0).mean():.0%}")
     print(f"  60m excursion vs spike direction: median up-side {f.mfe_follow.median():.2f}% / "
           f"down-side {f.mae_follow.median():.2f}%  (fade: swap them)")
