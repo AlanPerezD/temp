@@ -495,5 +495,57 @@ class ScheduledSender(unittest.TestCase):
         self.assertEqual((rc, calls), (0, ["5491159339911"]))
 
 
+class DoctorTests(unittest.TestCase):
+    def test_parse_go_version(self):
+        import doctor
+        self.assertEqual(doctor.parse_go_version("go version go1.22.3 linux/amd64"), (1, 22))
+        self.assertEqual(doctor.parse_go_version("go version go1.9 darwin/arm64"), (1, 9))
+        self.assertIsNone(doctor.parse_go_version(""))
+        self.assertIsNone(doctor.parse_go_version("command not found"))
+
+    def test_summarize_batch(self):
+        import doctor
+        rows = [{"sent": "x", "replied": "", "stop": "", "opt_in": "", "followup": "f"},
+                {"sent": "", "replied": "", "stop": "optout", "opt_in": "", "followup": ""},
+                {"sent": "", "replied": "", "stop": "", "opt_in": "pidió info", "followup": "f"}]
+        s = doctor.summarize_batch(rows)
+        self.assertEqual((s["rows"], s["sent"], s["stop"], s["opt_in"], s["pending"], s["has_followup_text"]),
+                         (3, 1, 1, 1, 1, 2))
+
+    def test_bridge_up_false_when_nothing_listens(self):
+        import doctor
+        self.assertFalse(doctor.bridge_up("http://127.0.0.1:9"))
+
+    def test_bridge_up_true_on_http_answer(self):
+        import doctor, threading
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+
+        class H(BaseHTTPRequestHandler):
+            def do_GET(self):
+                self.send_response(404)
+                self.end_headers()
+
+            def log_message(self, *a):
+                pass
+
+        srv = HTTPServer(("127.0.0.1", 0), H)
+        t = threading.Thread(target=srv.handle_request)
+        t.start()
+        try:
+            self.assertTrue(doctor.bridge_up(f"http://127.0.0.1:{srv.server_port}"))
+        finally:
+            t.join()
+            srv.server_close()
+
+    def test_main_reports_missing_bridge(self):
+        import doctor, io, contextlib
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            rc = doctor.main(["--bridge-dir", "/nonexistent/x", "--bridge-url", "http://127.0.0.1:9",
+                              "--batch", "/nonexistent/b.csv"])
+        self.assertEqual(rc, 1)
+        self.assertIn("Pendiente", buf.getvalue())
+
+
 if __name__ == "__main__":
     unittest.main()

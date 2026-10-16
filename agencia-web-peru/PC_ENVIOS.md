@@ -2,6 +2,16 @@
 
 Objetivo: un PC tuyo, siempre encendido, que envía los mensajes de forma espaciada y programada sin que estés delante. **Nunca desde la nube.** Claude Code corre en ese PC para instalar, vigilar y ayudarte con las respuestas; el envío en sí lo hace un script con límites duros (`leads/scheduled_sender.py`), no el modelo.
 
+## Camino rápido (3 comandos)
+1. Instala lo que falte: Git, Python 3.10+, Go 1.21+ (y en Windows MSYS2/gcc). Si te falta algo, el script te dice el comando exacto.
+2. En una terminal: `bash setup_pc.sh` (Mac/Linux) o `powershell -ExecutionPolicy Bypass -File setup_pc.ps1` (Windows). Clona los 3 repos, copia los datos y fija la versión del puente. Necesitas acceso git al repo privado (`gh auth login` o Git Credential Manager).
+3. Puente (déjalo abierto): `cd whatsapp-mcp/whatsapp-bridge && go run main.go` → escanea el QR con el **número secundario**.
+4. Revisión: `cd temp/agencia-web-peru/leads && python3 doctor.py` (no cambia ni envía nada; lista lo que falta).
+5. Prueba a tu número personal: `python3 scheduled_sender.py --test-to <TU_NUMERO>` y luego con `--live`.
+
+Después de eso, sigue "Preparación del PC" para el envío programado. Recuerda: el lote frío tiene `opt_in` vacío, así que con `--require-opt-in` no se enviará nada hasta que lo rellenes para quien pidió que le escribas; el primer contacto en frío es manual (enlace `wa.me` o envío aprobado en Claude Desktop).
+
+
 ## Arquitectura
 ```
 PC dedicado (Windows/Mac/Linux, sin suspensión)

@@ -17,6 +17,8 @@ Read this first in a new session. Last updated 2026-10-16.
 | `PRICING.md`, `pricing-benchmark.csv` | Agency price research (mostly one agency, KOM) + price ladder; benchmark sheet to fill |
 | `INBOUND.md` | Click-to-WhatsApp ads, WhatsApp Business app setup, reply playbook |
 | `PC_ENVIOS.md` | Option C: dedicated always-on user PC + bridge + `leads/scheduled_sender.py` (hours, daily cap, 10–30 min gaps, opt-in filter, auto reply/opt-out sync, STOP file), setup and Claude Code prompt |
+| `setup_pc.sh` / `setup_pc.ps1` | One-shot PC setup: checks tools, clones the 3 repos, copies private data, pins the bridge commit (Windows script untested) |
+| `leads/doctor.py` | Read-only pre-flight check (tools, bridge, QR session, batch stats, STOP file); prints the next command |
 | `WHATSAPP_DESKTOP.md` | Option B: local WhatsApp bridge (`github.com/lharries/whatsapp-mcp`) + Claude Desktop, setup, safeguards, sending checklist, prompt to paste |
 | `lead-tracker.csv`, `daily-scorecard.csv` | Templates to log outreach and daily numbers |
 | `leads/` | Lead pipeline (Python stdlib, 28 tests): see below |
