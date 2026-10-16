@@ -1,6 +1,6 @@
 # RESUME: lead generation for a web agency (dental clinics, Lima, Peru)
 
-Read this first in a new session. Last updated 2026-10-15.
+Read this first in a new session. Last updated 2026-10-16.
 
 ## Goal and decisions
 - Solo founder selling **websites to small dental clinics in Lima** (no portfolio yet). Method: Hormozi's *$100M Leads* (Core Four: warm outreach → content → cold outreach → ads), adapted to Peru.
@@ -16,11 +16,12 @@ Read this first in a new session. Last updated 2026-10-15.
 | `scripts-es.md` | Spanish scripts: warm, content hooks, cold, objections, sales call, no-portfolio wording |
 | `PRICING.md`, `pricing-benchmark.csv` | Agency price research (mostly one agency, KOM) + price ladder; benchmark sheet to fill |
 | `INBOUND.md` | Click-to-WhatsApp ads, WhatsApp Business app setup, reply playbook |
+| `WHATSAPP_DESKTOP.md` | Option B: local WhatsApp bridge (`github.com/lharries/whatsapp-mcp`) + Claude Desktop, setup, safeguards, sending checklist, prompt to paste |
 | `lead-tracker.csv`, `daily-scorecard.csv` | Templates to log outreach and daily numbers |
-| `leads/` | Lead pipeline (Python stdlib, 27 tests): see below |
+| `leads/` | Lead pipeline (Python stdlib, 28 tests): see below |
 
 ### Lead pipeline (`leads/`)
-- `fetch_apify.py` (Apify REST API with spend caps) · `fetch_places.py` (Google Places API, needs a key) · `clean_leads.py` (phones → +51, dedupe, website type, A/B/C score) · `make_outreach.py` (30 messages with pre-filled `wa.me` links) · `send_queue.py` (paced queue: opens one chat at a time, **the human presses send**).
+- `fetch_apify.py` (Apify REST API with spend caps) · `fetch_places.py` (Google Places API, needs a key) · `clean_leads.py` (phones → +51, dedupe, website type, A/B/C score) · `make_outreach.py` (30 messages, default `--style short`: introduces sender, clinic name + rating, no link, easy question, opt-out; plus ONE follow-up text; pre-filled `wa.me` links; tracking columns sent/replied/followup_sent/stop) · `send_queue.py` (paced queue: opens one chat at a time, **the human presses send**).
 - Docs: `leads/README.md`, `SOURCES.md` (costs of each data source), `APIFY_QUICKSTART.md`, `GOOGLE_SETUP.md`.
 - Run tests: `cd agencia-web-peru/leads && python3 -m unittest test_leads`.
 
@@ -35,10 +36,12 @@ Read this first in a new session. Last updated 2026-10-15.
 - WhatsApp sending options (see `WHATSAPP_DESKTOP.md`): **A)** `leads/send_queue.py`, official app, user taps send; **B)** local WhatsApp bridge + Claude Desktop on the user's computer, secondary number, every `send_message` approved by the user, short messages (`make_outreach.py` default style), ≤10/day in week 1, one follow-up max. Never from the cloud, never unattended. The secondary number is stored only in the private data repo.
 - Outreach to strangers is sent **by the user, by hand** (paced queue, 10–25 a day, 9–18 Lima time, with opt-out line). Prefer **inbound** (`INBOUND.md`): ads, organic "Comenta AUDITORÍA" videos, then reply to whoever writes.
 - Keep lead data local (git-ignored). Spend only within Apify's free credit.
+- Option B precautions (already in `WHATSAPP_DESKTOP.md`): secondary number only; the bridge is an UNOFFICIAL client (against WhatsApp terms, real ban risk); it exposes all chats of that account to the AI and its README warns about prompt injection, so the user approves every `send_message` (never "always allow"), replies are treated as data, no `send_file`/`download_media`; user should skim the bridge code and pin a commit hash before running. Week 1: ≤10/day, 10–30 min gaps (user keeps the clock), 9–18 Lima.
+- GitHub limits seen in cloud sessions: the GitHub App connection cannot create repos in the user's personal account (403). The user creates repos; attach with add_repo. A classic PAT in an env var (`GH_PAT`) would allow `gh repo create`, not set up. Permission prompts come from the session's permission mode (project allowlist in `.claude/settings.json` may need a new session to load).
 - Cautions (not legal advice): Peru data-protection law 29733 and anti-spam law 28493 apply; keep outreach B2B, personalized, with opt-out.
 
 ## Next steps (in priority order)
-1. User sends the first batch (10–15/day) via `send_queue.py` or the links in `outreach_batch1.md`; log replies.
+1. User sets up Option B on their computer (guide in `WHATSAPP_DESKTOP.md`), tests with a message to their own personal number, then sends ≤10/day from the secondary number (or uses Option A, `send_queue.py`); logs replies in the CSV.
 2. Draft audits and replies for every clinic that answers (use `scripts-es.md` §A2, D, E).
 3. Build the 2 demo sites and the homepage-mockup lead magnet (`PLAN.md` §10).
 4. Write week-1 content scripts (daily short video, CTA "Comenta AUDITORÍA").
