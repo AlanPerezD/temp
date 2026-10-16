@@ -9,6 +9,8 @@ import fetch_places as fp
 import fetch_apify as fa
 import make_outreach as mo
 import send_queue as sq
+import scheduled_sender as ss
+import sqlite3
 from datetime import datetime, timezone, timedelta
 
 
@@ -377,6 +379,120 @@ class Fetch(unittest.TestCase):
 
     def test_dry_run_needs_no_key(self):
         self.assertEqual(fp.main(["--dry-run", "--districts", "Miraflores", "--queries", "dentista"]), 0)
+
+
+class ScheduledSender(unittest.TestCase):
+    def lima(self, h, day=14):
+        return datetime(2026, 10, day, 0, 0, tzinfo=timezone.utc) + timedelta(hours=h + 5)
+
+    def rows(self, n=3):
+        return [{"name": f"C{i}", "district": "X", "phone": f"+5198000000{i}", "message": f"hola {i}",
+                 "followup": f"seguimiento {i}", "sent": "", "replied": "", "followup_sent": "", "stop": "", "notes": ""}
+                for i in range(n)]
+
+    def run_sender(self, argv, hour=10, rows=None, send=None, db_rows=None, day=14):
+        calls = []
+
+        def fake(url, to, text):
+            calls.append((to, text))
+            return (True, "ok") if send is None else send(to, text)
+
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "b.csv")
+            ss.save(path, rows or self.rows())
+            extra = []
+            if db_rows is not None:
+                db = os.path.join(d, "messages.db")
+                con = sqlite3.connect(db)
+                con.execute("CREATE TABLE messages (id TEXT, chat_jid TEXT, sender TEXT, content TEXT, timestamp TIMESTAMP, is_from_me BOOLEAN)")
+                con.executemany("INSERT INTO messages VALUES (?,?,?,?,?,0)", db_rows)
+                con.commit()
+                con.close()
+                extra = ["--db", db]
+            slept = []
+
+            def sleeper(s):
+                slept.append(s)
+                if len(slept) >= 3:
+                    open(os.path.join(d, "STOP"), "w").close()
+
+            rc = ss.main(["--batch", path, "--stop-file", os.path.join(d, "STOP")] + extra + argv,
+                         now_fn=lambda: self.lima(hour, day), sleep=sleeper, send=fake)
+            return rc, calls, slept, sq.load(path)
+
+    def test_dry_run_sends_nothing(self):
+        rc, calls, _, rows = self.run_sender([])
+        self.assertEqual((rc, calls), (0, []))
+        self.assertEqual(rows[0]["sent"], "")
+
+    def test_live_respects_cap_and_gap(self):
+        rc, calls, slept, rows = self.run_sender(["--live", "--daily-cap", "2"])
+        self.assertEqual([c[1] for c in calls], ["hola 0", "hola 1"])
+        self.assertEqual(calls[0][0], "51980000000")  # digits only, no "+"
+        self.assertTrue(all(600 <= s <= 1800 for s in slept[:2]))
+        self.assertEqual(rows[2]["sent"], "")
+
+    def test_outside_hours_and_stop_file(self):
+        _, calls, _, _ = self.run_sender(["--live", "--once"], hour=19)
+        self.assertEqual(calls, [])
+        with tempfile.TemporaryDirectory() as d:
+            stop = os.path.join(d, "STOP")
+            open(stop, "w").close()
+            path = os.path.join(d, "b.csv")
+            ss.save(path, self.rows())
+            sent = []
+            ss.main(["--batch", path, "--live", "--stop-file", stop], now_fn=lambda: self.lima(10),
+                    send=lambda *a: sent.append(a) or (True, ""))
+            self.assertEqual(sent, [])
+
+    def test_three_failures_trip_breaker(self):
+        rc, calls, _, rows = self.run_sender(["--live"], send=lambda to, t: (False, "boom"))
+        self.assertEqual(rc, 1)
+        self.assertEqual(len(calls), 3)
+        self.assertIn("send_fail", rows[0]["notes"])
+
+    def test_require_opt_in(self):
+        rows = self.rows()
+        for r in rows:
+            r["opt_in"] = ""
+        rows[1]["opt_in"] = "pidio info"
+        _, calls, _, _ = self.run_sender(["--live", "--once", "--require-opt-in"], rows=rows)
+        self.assertEqual([c[1] for c in calls], ["hola 1"])
+
+    def test_opt_out_detection(self):
+        for t in ["No", "no me escriba más", "No gracias", "Por favor dar de baja", "esto es spam", "no me interesa"]:
+            self.assertTrue(ss.is_opt_out(t), t)
+        for t in ["Hola, sí me interesa", "¿Cuánto cuesta?", "Buenos días"]:
+            self.assertFalse(ss.is_opt_out(t), t)
+
+    def test_reply_sync_marks_replied_and_stop(self):
+        rows = self.rows(2)
+        rows[0]["sent"] = "2026-10-13T10:00-05:00"
+        rows[1]["sent"] = "2026-10-13T10:05-05:00"
+        db = [("1", "51980000000@s.whatsapp.net", "x", "Hola, cuánto cuesta?", "2026-10-13 11:00:00-05:00"),
+              ("2", "51980000001@s.whatsapp.net", "x", "No me escriba más", "2026-10-13 12:00:00.123456789-05:00")]
+        _, calls, _, out = self.run_sender(["--live", "--once", "--followups"], rows=rows, db_rows=db)
+        self.assertTrue(out[0]["replied"])
+        self.assertEqual(out[0]["stop"], "")
+        self.assertTrue(out[1]["stop"].startswith("optout"))
+        self.assertEqual(calls, [])  # replied / opted out: nothing more is sent
+
+    def test_followup_once_after_three_days_only_if_silent(self):
+        rows = self.rows(3)
+        rows[0]["sent"] = "2026-10-10T10:00-05:00"                            # 4 days, silent -> due
+        rows[1]["sent"] = "2026-10-10T10:00-05:00"
+        rows[1]["replied"] = "x"                                              # replied -> no
+        rows[2]["sent"] = "2026-10-13T10:00-05:00"                            # 1 day -> no
+        _, calls, _, out = self.run_sender(["--live", "--once", "--followups"], rows=rows)
+        self.assertEqual([c[1] for c in calls], ["seguimiento 0"])
+        self.assertTrue(out[0]["followup_sent"])
+        _, calls2, _, _ = self.run_sender(["--live", "--once", "--followups"], rows=out)
+        self.assertNotIn("seguimiento 0", [c[1] for c in calls2])
+
+    def test_test_to(self):
+        calls = []
+        rc = ss.main(["--test-to", "+54 9 11 5933-9911", "--live"], send=lambda u, to, t: calls.append(to) or (True, ""))
+        self.assertEqual((rc, calls), (0, ["5491159339911"]))
 
 
 if __name__ == "__main__":
