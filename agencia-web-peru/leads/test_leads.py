@@ -230,14 +230,28 @@ class Outreach(unittest.TestCase):
         self.assertEqual([r["name"] for r in mo.select(self.ROWS, 10, min_reviews=50)], ["Dental Uno"])
 
     def test_message_and_link(self):
-        m = mo.build_message(self.ROWS[0], "Alan")
+        m = mo.build_message(self.ROWS[0], "Alan", "full")
         self.assertIn("5.0⭐ con 112 reseñas", m)
         self.assertIn("dentista en San Borja", m)
         self.assertIn("no le escriba más", m)  # opt-out line
-        self.assertIn("su consultorio en Google", mo.build_message(self.ROWS[2], "Alan"))
-        self.assertIn("dentista en Lima", mo.build_message(self.ROWS[2], "Alan"))  # unknown district fallback
+        self.assertIn("su consultorio en Google", mo.build_message(self.ROWS[2], "Alan", "full"))
+        self.assertIn("dentista en Lima", mo.build_message(self.ROWS[2], "Alan", "full"))
         link = mo.wa_link("+51987654321", "hola ñ\n1")
         self.assertTrue(link.startswith("https://wa.me/51987654321?text=hola%20%C3%B1%0A1"))
+
+    def test_short_style_follows_the_checklist(self):
+        row = dict(self.ROWS[0], name="Clínica Dental Uno | Ortodoncia | Implantes | Carillas")
+        m = mo.build_message(row, "Alan")  # short is the default
+        self.assertIn("Soy Alan", m)                       # introduces themself first
+        self.assertIn("Clínica Dental Uno en Google (5.0⭐, 112 reseñas)", m)  # specific, short name
+        self.assertNotIn("Ortodoncia", m)
+        self.assertNotIn("http", m)                        # no link in the first message
+        self.assertIn("¿", m)                              # ends in an easy question, not a pitch
+        self.assertIn("no le escribo más", m)              # opt-out
+        self.assertLess(len(m), 330)                       # short
+        self.assertIn("una sola vez más", mo.FOLLOWUP)     # exactly one follow-up
+        self.assertNotIn("http", mo.FOLLOWUP)
+        self.assertEqual(mo.short_name("A" * 80), "A" * 42 + "…")
 
 
 class SendQueue(unittest.TestCase):

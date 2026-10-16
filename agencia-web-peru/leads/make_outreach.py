@@ -15,7 +15,7 @@ import re
 import sys
 from urllib.parse import quote
 
-TEMPLATE = (
+TEMPLATE = (  # "full" style: longer, offers the free draft
     "Hola, buen día 👋 Soy {sender}. Vi {detail}, muy buen trabajo.\n\n"
     "Noté que su ficha de Google no tiene página web, así que quienes buscan "
     "\"dentista en {district}\" no pueden ver sus tratamientos ni agendar desde ahí. "
@@ -25,17 +25,46 @@ TEMPLATE = (
     "Si prefiere que no le escriba más, me avisa y listo 🙏"
 )
 
+# "short" style (default): introduce yourself first, one specific detail, no link, no pitch, an easy
+# question, and an opt-out. Matches the sending checklist in WHATSAPP_DESKTOP.md.
+SHORT = (
+    "Hola, buen día. Soy {sender}, trabajo con consultorios dentales en Lima. "
+    "Vi {detail} y noté que en su ficha de Google no aparece una página web propia. "
+    "¿Le interesaría que le muestre en un par de minutos cómo mejorar eso? "
+    "Si no es de su interés, me avisa y no le escribo más. Gracias 🙏"
+)
 
-def detail_for(row):
+# Sent at most ONCE, only to people who did not reply after a few days. Never a second follow-up.
+FOLLOWUP = (
+    "Hola, le escribo una sola vez más por si mi mensaje anterior se perdió 🙂 "
+    "¿Le envío una mini auditoría gratuita de su ficha de Google? "
+    "Si no le interesa, no hay problema y no vuelvo a escribirle."
+)
+
+
+def short_name(name):
+    """First segment of a long Google Maps title: 'Clínica X | Ortodoncia | Implantes' -> 'Clínica X'."""
+    n = name.split(" | ")[0].split(" || ")[0].split(" - ")[0].strip()
+    return n if len(n) <= 45 else n[:42].rstrip() + "…"
+
+
+def detail_for(row, style="full"):
     rating, reviews = row.get("rating", ""), row.get("reviews", "")
+    if style == "short":
+        who = short_name(row.get("name", "")) or "su consultorio"
+        if rating and reviews:
+            return f"{who} en Google ({rating}⭐, {reviews} reseñas)"
+        return f"{who} en Google"
     if rating and reviews:
         return f"que tienen {rating}⭐ con {reviews} reseñas en Google"
     return "su consultorio en Google"
 
 
-def build_message(row, sender):
+def build_message(row, sender, style="short"):
     district = row.get("district") or "Lima"
-    return TEMPLATE.format(sender=sender, detail=detail_for(row), district=district)
+    if style == "short":
+        return SHORT.format(sender=sender, detail=detail_for(row, "short"))
+    return TEMPLATE.format(sender=sender, detail=detail_for(row, "full"), district=district)
 
 
 def wa_link(phone, message):
@@ -60,6 +89,7 @@ def main(argv=None):
     ap.add_argument("--leads", default="data/leads_clean.csv")
     ap.add_argument("--sender", default="[TU NOMBRE]")
     ap.add_argument("--limit", type=int, default=30)
+    ap.add_argument("--style", choices=["short", "full"], default="short")
     ap.add_argument("--min-reviews", type=int, default=0)
     ap.add_argument("--out", default="data/outreach_batch1")
     ap.add_argument("--exclude-file", help="CSV with a 'phone' column of numbers already contacted")
@@ -75,10 +105,10 @@ def main(argv=None):
     chosen = select(rows, args.limit, args.min_reviews, exclude)
     batch = []
     for r in chosen:
-        msg = build_message(r, args.sender)
+        msg = build_message(r, args.sender, args.style)
         batch.append({"tier": r["tier"], "score": r["score"], "name": r["name"], "district": r["district"],
-                      "phone": r["phone"], "message": msg, "wa_link": wa_link(r["phone"], msg),
-                      "maps_url": r["maps_url"], "sent": "", "replied": "", "notes": ""})
+                      "phone": r["phone"], "message": msg, "followup": FOLLOWUP, "wa_link": wa_link(r["phone"], msg),
+                      "maps_url": r["maps_url"], "sent": "", "replied": "", "followup_sent": "", "stop": "", "notes": ""})
 
     with open(args.out + ".csv", "w", newline="", encoding="utf-8-sig") as f:
         w = csv.DictWriter(f, fieldnames=list(batch[0].keys()) if batch else ["name"])

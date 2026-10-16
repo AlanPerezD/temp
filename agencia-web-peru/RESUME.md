@@ -32,6 +32,7 @@ Read this first in a new session. Last updated 2026-10-15.
 - Districts not yet pulled: Jesús María, Lince, Surquillo, Magdalena, Pueblo Libre, San Miguel, Barranco, Chorrillos, Los Olivos.
 
 ## Working rules
+- WhatsApp sending options (see `WHATSAPP_DESKTOP.md`): **A)** `leads/send_queue.py`, official app, user taps send; **B)** local WhatsApp bridge + Claude Desktop on the user's computer, secondary number, every `send_message` approved by the user, short messages (`make_outreach.py` default style), ≤10/day in week 1, one follow-up max. Never from the cloud, never unattended. The secondary number is stored only in the private data repo.
 - Outreach to strangers is sent **by the user, by hand** (paced queue, 10–25 a day, 9–18 Lima time, with opt-out line). Prefer **inbound** (`INBOUND.md`): ads, organic "Comenta AUDITORÍA" videos, then reply to whoever writes.
 - Keep lead data local (git-ignored). Spend only within Apify's free credit.
 - Cautions (not legal advice): Peru data-protection law 29733 and anti-spam law 28493 apply; keep outreach B2B, personalized, with opt-out.
