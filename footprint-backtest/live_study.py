@@ -17,6 +17,8 @@ import argparse
 import numpy as np
 import pandas as pd
 
+import session
+
 HORIZONS = (1, 5, 15, 60)  # minutes
 GAP_NS = 10 * 60 * 10**9
 
@@ -47,7 +49,7 @@ def triggers(trades, vol_min, move_min, bar="5min", delay_s=1, tick=0.01, stall_
         extreme = run_hi[i] if d > 0 else run_lo[i]
         pullback = abs(extreme - px[i]) / tick
         k = np.searchsorted(ts, ts[i] + delay_s * 10**9)
-        if k >= len(ts):
+        if k >= len(ts) or not session.can_enter(bar_start):
             continue
         rows.append(dict(bar=bar_start, i=i, k=k, dir=d, vol=cumvol[i], move=move[i],
                          delta_bar=cumdelta[i] * d, delta_60s=d60 * d, pullback_t=pullback,
@@ -94,7 +96,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("trades_parquet")
     a = ap.parse_args()
-    tr = pd.read_parquet(a.trades_parquet)
+    tr = session.load_trades() if a.trades_parquet == "all" else pd.read_parquet(a.trades_parquet)
     for vmin, mmin in ((1500, 0.3), (2500, 0.3), (1500, 0.5)):
         ev, ts, px = triggers(tr, vmin, mmin)
         f = outcomes(dedupe(ev), ts, px)

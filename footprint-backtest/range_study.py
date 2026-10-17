@@ -5,13 +5,15 @@ Setup (all known live, inside the forming candle):
   2. spike direction = the side of the open where the extreme is; extreme = running high/low
   3. entry = first trade where price has pulled back `pullback_ticks` from that extreme,
      still inside the candle; entry `delay_s` later, AGAINST the spike
-Exit: fixed stop / target in ticks (his typical target 55-110 ticks), `max_min` time stop.
+Exit: fixed stop / target in ticks (his typical target 55-110 ticks), `max_min` time stop (default: hold to the 18:00 BA close).
 The range threshold was read off the labeled examples, so those dates are in-sample.
 """
 import argparse
 
 import numpy as np
 import pandas as pd
+
+import session
 
 TICK = 0.01
 
@@ -37,17 +39,17 @@ def setups(trades, range_ticks=80, pullback_ticks=20, bar="5min", delay_s=1):
             continue
         j = seg[np.argmax(pulled)]
         k = np.searchsorted(ts, ts[j] + delay_s * 10**9)
-        if k < len(ts):
+        if k < len(ts) and session.can_enter(bar_start):
             rows.append(dict(bar=bar_start, dir=d, k=k, extreme=ext[np.argmax(pulled)],
                              range_t=(hi[j] - lo[j]) / TICK))
     return pd.DataFrame(rows), ts, px
 
 
-def run(ev, ts, px, stop_ticks, target_ticks, max_min=60, cost_ticks=2):
+def run(ev, ts, px, stop_ticks, target_ticks, max_min=600, cost_ticks=2):
     out = []
     for r in ev.itertuples():
         entry, side = px[r.k], -r.dir
-        end = np.searchsorted(ts, ts[r.k] + max_min * 60 * 10**9, side="right")
+        end = np.searchsorted(ts, min(ts[r.k] + max_min * 60 * 10**9, session.close_ns(ts[r.k])), side="right")
         path = (px[r.k:end] - entry) * side / TICK
         ht = np.nonzero(path >= target_ticks)[0]
         hs = np.nonzero(path <= -stop_ticks)[0]
@@ -77,7 +79,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("trades_parquet")
     a = ap.parse_args()
-    tr = pd.read_parquet(a.trades_parquet)
+    tr = session.load_trades() if a.trades_parquet == "all" else pd.read_parquet(a.trades_parquet)
     ev, ts, px = setups(tr)
     ev = dedupe(ev)
     print(f"{len(ev)} setups (range>=80t, pullback>=20t)")

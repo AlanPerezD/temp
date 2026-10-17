@@ -12,9 +12,10 @@ import numpy as np
 import pandas as pd
 
 import live_study
+import session
 
 
-def simulate(ev, ts, px, open_px, stop_ticks, target_frac, max_min=60, tick=0.01, cost_ticks=2):
+def simulate(ev, ts, px, open_px, stop_ticks, target_frac, max_min=600, tick=0.01, cost_ticks=2):
     out = []
     for r, o in zip(ev.itertuples(), open_px):
         entry = px[r.k]
@@ -23,7 +24,7 @@ def simulate(ev, ts, px, open_px, stop_ticks, target_frac, max_min=60, tick=0.01
         tgt_ticks = (target - entry) * d / tick
         if tgt_ticks <= 0:
             continue
-        end = np.searchsorted(ts, ts[r.k] + max_min * 60 * 10**9, side="right")
+        end = np.searchsorted(ts, min(ts[r.k] + max_min * 60 * 10**9, session.close_ns(ts[r.k])), side="right")
         path = (px[r.k:end] - entry) * d / tick
         hit_t = np.nonzero(path >= tgt_ticks)[0]
         hit_s = np.nonzero(path <= -stop_ticks)[0]
@@ -51,7 +52,7 @@ if __name__ == "__main__":
     ap.add_argument("--vol", type=int, default=2500)
     ap.add_argument("--move", type=float, default=0.45)
     a = ap.parse_args()
-    tr = pd.read_parquet(a.trades_parquet)
+    tr = session.load_trades() if a.trades_parquet == "all" else pd.read_parquet(a.trades_parquet)
     ev, ts, px = live_study.triggers(tr, a.vol, a.move)
     ev = live_study.dedupe(ev)
     op = open_prices(ev, tr)

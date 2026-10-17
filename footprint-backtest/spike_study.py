@@ -10,6 +10,8 @@ import argparse
 import numpy as np
 import pandas as pd
 
+import session
+
 HORIZONS = (5, 15, 60)  # minutes
 GAP_NS = 10 * 60 * 10**9  # a horizon landing in a gap longer than this is dropped
 
@@ -20,7 +22,7 @@ def spike_bars(trades, vol_min=1500, move_min=0.25, bar="5min"):
     b = pd.DataFrame({"vol": g["size"].sum(), "open": g["price"].first(), "close": g["price"].last()})
     b["move_pct"] = (b["close"] - b["open"]) / b["open"] * 100
     b = b[(b["vol"] >= vol_min) & (b["move_pct"].abs() >= move_min)]
-    return b
+    return b[[session.can_enter(ix) for ix in b.index]]
 
 
 def cluster_first(bars, gap="30min"):
@@ -81,7 +83,7 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("trades_parquet")
     a = p.parse_args()
-    tr = pd.read_parquet(a.trades_parquet)
+    tr = session.load_trades() if a.trades_parquet == "all" else pd.read_parquet(a.trades_parquet)
     for vmin in (1500, 2500):
         for mmin in (0.0, 0.3, 0.5):
             b = cluster_first(spike_bars(tr, vmin, mmin))

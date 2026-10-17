@@ -8,7 +8,7 @@ import fade_sim
 
 class FadeTests(unittest.TestCase):
     def mk(self, prices):
-        ts = np.arange(len(prices)) * 10**9 * 30  # 30 s apart
+        ts = pd.Timestamp("2026-10-05 12:00", tz="UTC").value + np.arange(len(prices)) * 10**9 * 30  # 30 s apart
         return pd.DataFrame([dict(bar=pd.Timestamp("2026-10-05", tz="UTC"), k=0, dir=1.0)]), ts, np.array(prices)
 
     def test_target_first(self):
