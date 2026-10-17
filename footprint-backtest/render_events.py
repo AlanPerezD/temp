@@ -50,14 +50,23 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("trades_parquet"); ap.add_argument("--n", type=int, default=6)
     ap.add_argument("--vol", type=int, default=2500); ap.add_argument("--move", type=float, default=0.3)
+    ap.add_argument("--post", type=int, default=5, help="minutes shown after the candle (0 hides the outcome)")
+    ap.add_argument("--random", type=int, default=None, help="seed: pick events at random instead of evenly")
+    ap.add_argument("--prefix", default="example")
+    ap.add_argument("--exclude", nargs="*", default=[], help="candle starts (UTC) to skip")
     a = ap.parse_args()
     tr = pd.read_parquet(a.trades_parquet).sort_values("ts_event")
     bars = spike_study.cluster_first(spike_study.spike_bars(tr, a.vol, a.move))
-    pick = bars.iloc[np.linspace(0, len(bars) - 1, a.n).astype(int)]
+    bars = bars[~bars.index.strftime("%Y-%m-%d %H:%M").isin(a.exclude)]
+    if a.random is None:
+        pick = bars.iloc[np.linspace(0, len(bars) - 1, a.n).astype(int)]
+    else:
+        pick = bars.iloc[sorted(np.random.default_rng(a.random).choice(len(bars), a.n, replace=False))]
     out_dir = Path(__file__).parent / "data" / "examples"; out_dir.mkdir(exist_ok=True)
     for k, (ts, r) in enumerate(pick.iterrows(), 1):
         d = "UP" if r.move_pct > 0 else "DOWN"
         title = (f"#{k}  {ts.tz_convert(BA):%a %d %b %H:%M} BA  |  5-min volume {int(r.vol)}  |  "
                  f"candle {r.move_pct:+.2f}% ({d})  |  close {r.close:.2f}")
-        draw(tr, ts, out_dir / f"example_{k}.png", title=title)
+        draw(tr, ts, out_dir / f"{a.prefix}_{k}.png", post=a.post, title=title)
         print(title)
+    pick.assign(chart=range(1, len(pick) + 1)).to_csv(out_dir / f"{a.prefix}_events.csv")
