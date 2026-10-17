@@ -31,6 +31,18 @@ def load_key():
     return key
 
 
+def retry(fn, tries=4, **kw):
+    """Databento occasionally returns 5xx on long runs; back off and retry."""
+    import time as _t
+    for n in range(tries):
+        try:
+            return fn(**kw)
+        except db.common.error.BentoServerError:
+            if n == tries - 1:
+                raise
+            _t.sleep(2 ** (n + 1))
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--symbol", default="CL.v.0",
@@ -63,8 +75,8 @@ def main():
 
     total = 0.0
     for schema in args.schemas:
-        cost = sum(client.metadata.get_cost(schema=schema, start=s0, end=e0, **common) for s0, e0 in ranges)
-        size_gb = sum(client.metadata.get_billable_size(schema=schema, start=s0, end=e0, **common)
+        cost = sum(retry(client.metadata.get_cost, schema=schema, start=s0, end=e0, **common) for s0, e0 in ranges)
+        size_gb = sum(retry(client.metadata.get_billable_size, schema=schema, start=s0, end=e0, **common)
                       for s0, e0 in ranges) / 1e9
         print(f"{schema:10s} {len(ranges):3d} range(s) ~{size_gb:7.3f} GB   ${cost:8.4f}")
         total += cost
@@ -85,7 +97,7 @@ def main():
         parts = []
         for k, (s0, e0) in enumerate(ranges):
             dbn = out / f"{schema}_{tag}_{k:03d}.dbn.zst"
-            store = client.timeseries.get_range(schema=schema, start=s0, end=e0, path=dbn, **common)
+            store = retry(client.timeseries.get_range, schema=schema, start=s0, end=e0, path=dbn, **common)
             if store.metadata.limit != 0 or dbn.stat().st_size > 0:
                 df = store.to_df()
                 if len(df):
