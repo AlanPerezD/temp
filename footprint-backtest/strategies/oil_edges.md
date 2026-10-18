@@ -23,8 +23,10 @@ all ~25 strategies.
 ## The late-session drift in detail (`late_session.py`)
 - Front month: +1.69 ticks/day gross over 3,893 days (t 2.9); 16 of 17 years positive; both hours
   (15:00 and 16:00 ET) positive.
+- 2nd-month contract (no expiry effects; download was cut off, covers 2010-Oct 2020 only):
+  +1.11 ticks/day over 2,593 days (t 2.3); 15:00 ET hour strongest again (t 2.3).
 - MCL tick data Jul-Oct 2026 (independent instrument): +7.6 ticks/day, t 1.0 (too few days alone).
-- **Too thin to trade on its own:** net of 1 tick +0.7 ticks/day (~$170/MCL/year); net of 2 ticks
+- **Too thin to trade on its own:** net of 1 tick +0.7 ticks/day front month (~$170/MCL/year), +0.1 on the 2nd month; net of 2 ticks
   it loses. Only workable with near-zero costs (passive limit fills) or as a timing overlay:
   hold existing longs through 15-17 ET, delay new shorts until after 17:00 ET.
 
