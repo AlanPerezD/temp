@@ -108,3 +108,12 @@ logged,program,name,unit,n,mean,t,t_dev,t_test,note
 2026-10-18T19:47:23,ftmo_fit,"CL minute sim stop 30 / target 60, flat 16:09 2023-2026",ticks/trade net 2.5,427,-2.1276,-2.197,nan,nan,
 2026-10-18T19:47:23,ftmo_fit,"CL minute sim stop 15 / target 30, flat 15:50 2018-2022",ticks/trade net 2.5,614,-2.5244,-4.628,nan,nan,
 2026-10-18T19:47:23,ftmo_fit,"CL minute sim stop 15 / target 30, flat 15:50 2023-2026",ticks/trade net 2.5,427,-2.4157,-3.515,nan,nan,
+2026-10-18T20:06:58,index_close,ES B both directions,ticks/trade gross,3989,1.5362,1.985,0.907,1.806,pre-registered; 15:00-16:00 ET
+2026-10-18T20:06:58,index_close,ES L long only when up,ticks/trade gross,2203,1.0109,1.031,1.135,0.737,pre-registered; 15:00-16:00 ET
+2026-10-18T20:06:58,index_close,ES S short only when down,ticks/trade gross,1786,2.1842,1.77,0.12,1.804,pre-registered; 15:00-16:00 ET
+2026-10-18T20:06:59,index_close,NQ B both directions,ticks/trade gross,4002,5.2231,1.74,0.602,1.667,pre-registered; 15:00-16:00 ET
+2026-10-18T20:06:59,index_close,NQ L long only when up,ticks/trade gross,2190,2.8616,0.756,0.77,0.643,pre-registered; 15:00-16:00 ET
+2026-10-18T20:06:59,index_close,NQ S short only when down,ticks/trade gross,1812,8.0773,1.684,0.096,1.691,pre-registered; 15:00-16:00 ET
+2026-10-18T20:06:59,index_close,YM B both directions,ticks/trade gross,4000,0.801,0.567,-0.56,0.782,pre-registered; 15:00-16:00 ET
+2026-10-18T20:06:59,index_close,YM L long only when up,ticks/trade gross,2158,0.2623,0.146,-0.205,0.22,pre-registered; 15:00-16:00 ET
+2026-10-18T20:06:59,index_close,YM S short only when down,ticks/trade gross,1842,1.4321,0.64,-0.571,0.867,pre-registered; 15:00-16:00 ET
