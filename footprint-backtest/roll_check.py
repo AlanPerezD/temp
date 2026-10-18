@@ -13,7 +13,7 @@ import sys
 import numpy as np
 import pandas as pd
 
-TICK = {"CL": 0.01, "HO": 0.0001, "RB": 0.0001, "NG": 0.001}
+TICK = {"CL": 0.01, "HO": 0.0001, "RB": 0.0001, "NG": 0.001, "BZ": 0.01}
 BEFORE15 = set([18, 19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
 

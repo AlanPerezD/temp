@@ -1,5 +1,18 @@
 # Edge found: late-session momentum in NYMEX energy futures
 
+> **Update after the contract-roll question (roll_check.py, roll_split.py):**
+> - Not a roll-gap artifact: in 16 years no contract switch ever falls in the 15:00-17:00 ET window
+>   (all switches happen at the 18:00-20:00 ET reopen), and every price change is measured inside one
+>   contract. Crude keeps the effect after removing every roll/expiry week (+3.5 ticks, t 3.8) and on
+>   the 2nd-month contract (+2.9 ticks, t 4.6).
+> - **Correction:** the effect was broad in 2010-2017. Since 2018 it is concentrated in the
+>   **month-end window** (last 5 business days + first 2 of the next month): TEST HO +26.5 ticks (t 3.0),
+>   RB +14.8 (t 2.5), CL +4.2 (t 2.3), BZ +4.0 (t 2.1); rest of the month ~0. Crude expires ~20th,
+>   so this is month-end flow, not expiry. The month-end concentration was found AFTER looking at the
+>   data, so it is a hypothesis to confirm with forward (paper) trading before risking money.
+> - The HO/RB dollar figures below include the pre-2018 broad effect; for current conditions only the
+>   month-end days carry the edge.
+
 **Status: statistically real and replicated across markets; economically modest; only worth trading
 in full-size contracts (best in heating oil). Not a get-rich edge.**
 
