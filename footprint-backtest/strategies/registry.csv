@@ -22,3 +22,43 @@ logged,program,name,unit,n,mean,t,t_dev,t_test,note
 2026-10-18T18:38:01,h1_robust,16:00-17:00 ET only,ticks/trade gross,1989,2.3449,4.634,5.074,2.329,"robustness check, not selection"
 2026-10-18T18:38:01,h1_robust,day up by more than DEV 75th pct (74 ticks),ticks/trade gross,1072,4.2285,3.543,4.695,1.595,"robustness check, not selection"
 2026-10-18T18:43:23,h5_reopen,H5 short reopen->20:00 ET after up day,ticks/trade gross,1113,2.5067,1.933,2.996,1.125,
+2026-10-18T18:49:17,energy_lab,E1 WTI-Brent spread MR z20,$/day per spread,4189,-4.1657,-0.705,-0.41,-0.71,
+2026-10-18T18:49:17,energy_lab,E1 WTI-Brent spread MR z60,$/day per spread,4189,-4.8389,-0.751,-1.241,0.757,
+2026-10-18T18:49:17,energy_lab,E1 WTI-Brent spread MR z120,$/day per spread,4189,-4.0177,-0.632,-1.365,1.415,
+2026-10-18T18:49:17,energy_lab,E2 3-2-1 crack MR z20,$/day per 3-2-1 package,4189,-38.7651,-1.222,-0.598,-1.072,
+2026-10-18T18:49:17,energy_lab,E2 3-2-1 crack MR z60,$/day per 3-2-1 package,4189,-51.2157,-1.468,-0.904,-1.162,
+2026-10-18T18:49:17,energy_lab,E2 3-2-1 crack MR z120,$/day per 3-2-1 package,4189,-61.7742,-1.763,-0.924,-1.503,
+2026-10-18T18:49:17,energy_lab,E2 RB-CL crack MR z60,$/day per 1:1 crack,4189,-11.4106,-0.991,-1.718,0.156,
+2026-10-18T18:49:17,energy_lab,E2 HO-CL crack MR z60,$/day per 1:1 crack,4189,-33.749,-1.945,-0.698,-1.817,
+2026-10-18T18:49:17,energy_lab,E3 crack 1y-z -> CL long/short,return/day,3938,0.0007,1.841,0.115,2.097,
+2026-10-18T18:49:17,energy_lab,E3 crack 1y-z -> CL long/flat,return/day,3938,0.0004,1.834,-0.601,2.509,
+2026-10-18T18:49:17,energy_lab,E4 energy trend portfolio 3m,return/day,4126,0.0001,1.308,1.463,0.459,
+2026-10-18T18:49:17,energy_lab,E4 energy trend portfolio 12m,return/day,3937,0.0001,1.794,1.973,0.757,
+2026-10-18T18:49:17,energy_lab,E5 energy carry portfolio (sign of slope),return/day,4129,0.0001,2.303,1.514,1.746,
+2026-10-18T18:49:17,energy_lab,E5 cross-sectional carry (long top2 / short bottom2),return/day,4129,-0.0,-0.167,0.988,-1.074,
+2026-10-18T18:49:18,energy_lab,E6 Cushing surprise -> next week front spread,$/day per spread,3993,-11.1119,-1.473,-2.245,-1.016,
+2026-10-18T18:49:18,energy_lab,E7 S&P day return -> next-day CL,return/day,4118,-0.0,-0.012,-1.789,1.172,
+2026-10-18T18:49:18,energy_lab,E8 CL 2nd-3rd spread MR z60,$/day per spread,3993,-1.8257,-0.808,0.196,-0.972,
+2026-10-18T18:49:18,energy_lab,"E9 short front spread, last 5 days before expiry",$/day per spread,3993,-1.0043,-0.15,-0.821,0.011,
+2026-10-18T18:49:18,energy_lab,E10 seasonal RB crack long Feb-Apr,$/day per 1:1 crack,4189,17.0544,2.067,0.721,2.072,
+2026-10-18T18:49:18,energy_lab,E11 seasonal HO crack long Sep-Dec,$/day per 1:1 crack,4189,2.1125,0.19,-0.764,0.564,
+2026-10-18T18:49:18,energy_lab,E12 short oil variance at OVX (monthly),var-pts x100 per month,193,2.7276,2.574,5.088,1.129,
+2026-10-18T18:49:18,energy_lab,E12 short variance only when OVX > past realised,var-pts x100 per month,193,1.411,1.467,4.049,0.256,
+2026-10-18T18:49:54,ml_lab,ML A ridge long/short,return/week,656,-0.0016,-0.723,-2.352,0.411,
+2026-10-18T18:49:54,ml_lab,ML A ridge long/flat,return/week,656,-0.0001,-0.081,-2.09,0.97,
+2026-10-18T18:49:56,ml_lab,ML B boosting long/short,return/week,656,0.0009,0.435,-2.006,1.547,
+2026-10-18T18:49:56,ml_lab,ML B boosting long/flat,return/week,656,0.0011,0.63,-1.64,1.685,
+2026-10-18T18:50:16,hourly_multi,BZ H1a 15-17 ET if day up,ticks/trade gross,2003,0.7219,0.82,1.359,0.369,replication of CL edge #1
+2026-10-18T18:50:16,hourly_multi,BZ H1-last 16-17 ET if day up,ticks/trade gross,1827,1.0821,2.125,1.86,1.424,replication of CL edge #1
+2026-10-18T18:50:16,hourly_multi,HO H1a 15-17 ET if day up,ticks/trade gross,1973,10.1303,3.47,4.245,2.287,replication of CL edge #1
+2026-10-18T18:50:16,hourly_multi,HO H1-last 16-17 ET if day up,ticks/trade gross,1973,6.0051,3.37,3.585,2.202,replication of CL edge #1
+2026-10-18T18:50:16,hourly_multi,RB H1a 15-17 ET if day up,ticks/trade gross,2035,6.2226,2.979,4.204,0.962,replication of CL edge #1
+2026-10-18T18:50:16,hourly_multi,RB H1-last 16-17 ET if day up,ticks/trade gross,2034,4.1195,2.805,2.128,1.948,replication of CL edge #1
+2026-10-18T18:51:18,edge1_filter,CL TEST up>DEVq75,$ net/trade,342,2.0175,0.07,nan,0.07,threshold from DEV
+2026-10-18T18:51:19,edge1_filter,HO TEST up>DEVq75,$ net/trade,400,69.3295,1.284,nan,1.284,threshold from DEV
+2026-10-18T18:51:19,edge1_filter,RB TEST up>DEVq75,$ net/trade,333,2.3153,0.069,nan,0.069,threshold from DEV
+2026-10-18T18:51:50,edge2_carry,"BASE monthly, 2nd-3rd slope, equal risk",$/day,4130,17.9854,0.543,0.185,0.107,Sharpe in t_dev/t_test columns
+2026-10-18T18:51:50,edge2_carry,weekly rebalance,$/day,4130,43.4663,1.388,0.265,0.397,Sharpe in t_dev/t_test columns
+2026-10-18T18:51:50,edge2_carry,front spread signal (1st-2nd),$/day,4130,3.5015,0.124,0.251,-0.115,Sharpe in t_dev/t_test columns
+2026-10-18T18:51:51,edge2_carry,without NG,$/day,4130,23.9522,0.77,0.082,0.255,Sharpe in t_dev/t_test columns
+2026-10-18T18:51:51,edge2_carry,equal notional ($100k per market),$/day,4130,18.3603,0.167,0.179,-0.028,Sharpe in t_dev/t_test columns
