@@ -14,3 +14,4 @@ Rerun: `python3 strategy_lab.py` (needs the data in `../data/`, see top-level RE
 | `macro_results.txt` | Full output of `macro_lab.py` |
 | `EDGE_late_session_momentum.md` | **The edge found**: rule, evidence, economics, risks, timetable in Buenos Aires time |
 | `registry.csv` | Every hypothesis tested in the edge search (for multiple-testing correction) |
+| `ftmo_fit_results.txt` | Output of `ftmo_fit.py`: does the late-session edge fit the FTMO 50K rules? (No) |

@@ -1,0 +1,52 @@
+CL minute bars 2018-01-01..2026-10-15: 1998 sessions, 1041 up-days at 15:00 ET
+
+1) Where does the gain happen? (ticks per CL, long on up-days, no costs)
+  2018-2022:
+    15:00-15:50 (inside your own rule)             n= 614  -0.15 ticks  t=-0.19
+    15:50-16:10 (past your deadline, inside FTMO)  n= 614  +1.06 ticks  t=+1.99
+    16:10-17:00 (FTMO forbids)                     n= 612  +0.59 ticks  t=+0.80
+    15:00-16:10 (all FTMO allows)                  n= 614  +0.90 ticks  t=+0.96
+    15:00-17:00 (original edge)                    n= 614  +1.55 ticks  t=+1.35
+  2023-2026:
+    15:00-15:50 (inside your own rule)             n= 427  +0.52 ticks  t=+0.36
+    15:50-16:10 (past your deadline, inside FTMO)  n= 427  +1.95 ticks  t=+2.80
+    16:10-17:00 (FTMO forbids)                     n= 427  +1.67 ticks  t=+1.16
+    15:00-16:10 (all FTMO allows)                  n= 427  +2.43 ticks  t=+1.47
+    15:00-17:00 (original edge)                    n= 427  +4.13 ticks  t=+1.73
+  2018-2026:
+    15:00-15:50 (inside your own rule)             n=1041  +0.12 ticks  t=+0.17
+    15:50-16:10 (past your deadline, inside FTMO)  n=1041  +1.42 ticks  t=+3.35
+    16:10-17:00 (FTMO forbids)                     n=1039  +1.04 ticks  t=+1.41
+    15:00-16:10 (all FTMO allows)                  n=1041  +1.53 ticks  t=+1.75
+    15:00-17:00 (original edge)                    n=1041  +2.61 ticks  t=+2.20
+
+   Month-end window only (last 5 + first 2 business days), 2018-2026:
+    15:00-15:50 (inside your own rule)             n= 357  +2.11 ticks  t=+2.08
+    15:50-16:10 (past your deadline, inside FTMO)  n= 357  +0.94 ticks  t=+1.39
+    16:10-17:00 (FTMO forbids)                     n= 357  +1.32 ticks  t=+1.01
+    15:00-16:10 (all FTMO allows)                  n= 357  +3.03 ticks  t=+2.43
+    15:00-17:00 (original edge)                    n= 357  +4.30 ticks  t=+2.31
+
+2) The trades your plan would allow: stop + target on every order, flat by the deadline
+   (ticks per CL = 10 MCL; costs: spread+fees 2.5 ticks per CL round trip assumed, i.e. $25 per 10 MCL)
+  stop 20 / target 40, flat 15:50    2018-2022: n= 614 net  -2.59 ticks ($ -25.9 per 10 MCL) t=-4.32 win 41% | target 4% stop 19% time 77%
+  stop 20 / target 40, flat 15:50    2023-2026: n= 427 net  -2.59 ticks ($ -25.9 per 10 MCL) t=-3.42 win 41% | target 5% stop 18% time 77%
+  stop 20 / target 40, flat 16:09    2018-2022: n= 614 net  -2.52 ticks ($ -25.2 per 10 MCL) t=-3.93 win 43% | target 5% stop 23% time 72%
+  stop 20 / target 40, flat 16:09    2023-2026: n= 427 net  -2.40 ticks ($ -24.0 per 10 MCL) t=-2.87 win 44% | target 7% stop 24% time 69%
+  stop 30 / target 60, flat 16:09    2018-2022: n= 614 net  -2.26 ticks ($ -22.6 per 10 MCL) t=-2.99 win 45% | target 3% stop 13% time 84%
+  stop 30 / target 60, flat 16:09    2023-2026: n= 427 net  -2.13 ticks ($ -21.3 per 10 MCL) t=-2.20 win 45% | target 4% stop 12% time 84%
+  stop 15 / target 30, flat 15:50    2018-2022: n= 614 net  -2.52 ticks ($ -25.2 per 10 MCL) t=-4.63 win 39% | target 8% stop 28% time 64%
+  stop 15 / target 30, flat 15:50    2023-2026: n= 427 net  -2.42 ticks ($ -24.2 per 10 MCL) t=-3.51 win 40% | target 9% stop 27% time 63%
+
+3) Same, month-end days only (2018-2026), stop 20 / target 40, flat 16:09:
+  n=357 net -2.14 ticks ($-21.4 per 10 MCL) t=-2.31 win 44%
+
+4) For reference, NOT allowed on FTMO: hold to 16:59 ET with only a protective stop (no target)
+  stop 25 ticks   2018-2022: n=614 net  -2.49 ticks ($ -24.9 per CL) t=-2.60 win 43% worst -28 ticks
+  stop 25 ticks   2023-2026: n=427 net  +0.11 ticks ($  +1.1 per CL) t=+0.08 win 45% worst -28 ticks
+  stop 40 ticks   2018-2022: n=614 net  -2.00 ticks ($ -20.0 per CL) t=-1.88 win 46% worst -44 ticks
+  stop 40 ticks   2023-2026: n=427 net  +1.81 ticks ($ +18.1 per CL) t=+1.13 win 48% worst -44 ticks
+  stop 60 ticks   2018-2022: n=614 net  -2.00 ticks ($ -20.0 per CL) t=-1.79 win 47% worst -64 ticks
+  stop 60 ticks   2023-2026: n=427 net  +2.64 ticks ($ +26.4 per CL) t=+1.46 win 49% worst -64 ticks
+  stop none       2018-2022: n=614 net  -1.13 ticks ($ -11.3 per CL) t=-0.98 win 48% worst -236 ticks
+  stop none       2023-2026: n=427 net  +1.28 ticks ($ +12.8 per CL) t=+0.55 win 50% worst -479 ticks

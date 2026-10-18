@@ -1,5 +1,56 @@
-# Edge found: late-session momentum in NYMEX energy futures
+# Late-session momentum: how it works, and why it does NOT fit the FTMO 50K plan
 
+> ## VERDICT FOR THE FTMO FUTURES PRO 50K PLAN (added Oct 18 2026, after testing on 1-minute CL bars 2018-2026)
+> **Do not trade this on the FTMO evaluation.** It cannot be implemented inside your rules at a profit:
+> 1. **Wrong hours.** Your plan flats at 15:50 ET (FTMO's cutoff is 16:10 ET). The gain sits mostly after that.
+>    CL, long on up-days, ticks per contract, 2018-2026 (n=1,041, no costs):
+>    | Window (ET) | Gross | t |
+>    |---|---|---|
+>    | 15:00-15:50 (inside your own deadline) | +0.1 | 0.2 |
+>    | 15:50-16:10 (allowed by FTMO, past your deadline) | +1.4 | 3.4 |
+>    | 16:10-17:00 (FTMO forbids holding) | +1.0 | 1.4 |
+>    | 15:00-17:00 (the original edge) | +2.6 | 2.2 |
+> 2. **Wrong instruments.** The strong legs (heating oil, gasoline) are not on FTMO's list. FTMO has CL/MCL
+>    and NG only. On crude the edge is ~2.6 ticks gross vs ~2 ticks of spread + fees.
+> 3. **Your required stop + target destroy it.** With a stop and a 1:2 target and a flat deadline, the same
+>    trades earn -0.1 to +0.3 ticks gross even at ZERO cost, and -2.1 to -2.6 ticks net of costs
+>    (t -2.2 to -4.6, 1,041 trades). Stops cut the drift; ~70-80% of trades just time out.
+> 4. **Best allowed slot after costs:** 15:50-16:10 is +1.4 ticks gross: -0.1 net at 1.5 ticks of cost,
+>    -1.1 net at 2.5 ticks. Zero.
+> 5. **Too small to ever verify live.** Per-trade sd ~33 ticks vs mean ~2.6: one year of forward trading gives
+>    t ~ 0.9. Paper trading 30 days proves nothing either way.
+> The earlier "+$12/trade net on CL, $33 on HO" came from hourly bars, no stops, holding to 16:59 ET,
+> and 1 tick + $5 costs. It is real but is not what your FTMO plan allows.
+>
+> ### Where it still looks real
+> Heating oil / gasoline, month-end days, held to 16:59 ET on a normal futures account (not FTMO). Untested
+> with stops (needs HO minute data, ~$10). One full HO contract has per-trade sd ~$545 and worst case -$8,271,
+> which is incompatible with a $1,000 daily-loss limit unless a stop is used.
+
+## Why it works (the hypotheses, with what is and is not proven)
+1. **Hedging demand into the close (published):** Baltussen, Da, Lammers & Martens, *Journal of Financial
+   Economics* 142 (2021): across 60+ futures (incl. commodities, 1974-2020) the last half hour is predicted by
+   the rest of the day; they link it to gamma-hedging by option market makers and leveraged-fund rebalancing
+   (chasing the day's direction late). The effect reverts over the next days, so it only exists intraday.
+2. **Month-end flows (our finding, not proven):** since 2018 the effect is concentrated in the last 5 + first 2
+   business days of a month (HO +26 ticks, RB +15, CL +4), consistent with index/fund rebalancing. Found after
+   looking at the data, so unconfirmed.
+3. **Thin liquidity after settlement:** CL trades ~2-4k contracts/hour at 15:00-17:00 ET vs ~20k at 09:00-11:00,
+   so flow moves price more and costs more. That is exactly why the gain and the cost are the same size.
+
+## Optional day-to-day routine IF you want to watch it on a SIM account only (no real money, no FTMO)
+Times: New York | Buenos Aires until Nov 1 | Buenos Aires from Nov 1
+- 15:00 ET | 16:00 | 17:00: is price above where the session started (previous 18:00 ET reopen)? If no, skip.
+- 15:00 ET | 16:00 | 17:00: sim buy. Sizing as in your plan: risk $150-200, e.g. at CL $96.70 a 0.30% stop = 5 MCL.
+- 15:50 ET | 16:50 | 17:50: your flat deadline: be flat and cancel orders. (Holding to 16:09 ET is allowed by FTMO but past your own rule.)
+- Log: date, entry, price at 15:50 / 16:09 / 16:59, month-end yes/no.
+Expectation: about zero. The point would be learning, not income. Do not let it touch your FTMO risk budget
+(daily -$400, profit cap +$600, ladder, 20-micro cap): all of those stay unchanged.
+
+
+---
+
+## Original write-up (hourly bars, 2010-2026)
 > **Update after the contract-roll question (roll_check.py, roll_split.py):**
 > - Not a roll-gap artifact: in 16 years no contract switch ever falls in the 15:00-17:00 ET window
 >   (all switches happen at the 18:00-20:00 ET reopen), and every price change is measured inside one

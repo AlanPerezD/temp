@@ -11,6 +11,8 @@ import glob
 import numpy as np
 import pandas as pd
 
+import registry
+
 TICK = 0.01
 
 
@@ -90,6 +92,8 @@ def main():
                 if w is not None:
                     xs.append((w["close"].iloc[-1] - w["open"].iloc[0]) / TICK)
             print(f"    {lab:46s} n={len(xs):4d} {np.mean(xs):+6.2f} ticks  t={tstat(xs):+.2f}")
+            if per == "2018-2026":
+                registry.log("ftmo_fit", f"CL minute: {lab} up-days", "ticks/trade gross", len(xs), np.mean(xs), tstat(xs))
     print("\n   Month-end window only (last 5 + first 2 business days), 2018-2026:")
     for lab, (m0, m1) in wins.items():
         xs = []
@@ -99,6 +103,7 @@ def main():
                 if w is not None:
                     xs.append((w["close"].iloc[-1] - w["open"].iloc[0]) / TICK)
         print(f"    {lab:46s} n={len(xs):4d} {np.mean(xs):+6.2f} ticks  t={tstat(xs):+.2f}")
+        registry.log("ftmo_fit", f"CL minute month-end: {lab} up-days", "ticks/trade gross", len(xs), np.mean(xs), tstat(xs))
 
     print("\n2) The trades your plan would allow: stop + target on every order, flat by the deadline")
     print("   (ticks per CL = 10 MCL; costs: spread+fees 2.5 ticks per CL round trip assumed, i.e. $25 per 10 MCL)")
@@ -115,6 +120,7 @@ def main():
                     res.append(r - 2.5); kinds.append(k)
             res = np.array(res)
             kc = pd.Series(kinds).value_counts(normalize=True)
+            registry.log("ftmo_fit", f"CL minute sim {lab} {per}", "ticks/trade net 2.5", len(res), res.mean(), tstat(res))
             print(f"  {lab:34s} {per}: n={len(res):4d} net {res.mean():+6.2f} ticks (${res.mean()*10:+6.1f} per 10 MCL) t={tstat(res):+.2f} "
                   f"win {(res > 0).mean():.0%} | target {kc.get('target', 0):.0%} stop {kc.get('stop', 0):.0%} time {kc.get('time', 0):.0%}")
     print("\n3) Same, month-end days only (2018-2026), stop 20 / target 40, flat 16:09:")
