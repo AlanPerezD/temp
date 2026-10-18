@@ -1,0 +1,24 @@
+logged,program,name,unit,n,mean,t,t_dev,t_test,note
+2026-10-18T18:37:11,hourly_c0,H0 late 15-17 ET unconditional (reference),ticks/trade gross,3893,1.6853,2.928,2.144,2.158,
+2026-10-18T18:37:11,hourly_c0,H1a long late only if day up,ticks/trade gross,1989,2.7386,3.735,4.439,1.797,
+2026-10-18T18:37:11,hourly_c0,H1b late follows day direction (long up / short down),ticks/trade gross,3893,1.1148,1.936,3.737,0.148,
+2026-10-18T18:37:11,hourly_c0,H2 short 06:00-09:00 ET,ticks/trade gross,4209,1.287,1.328,2.238,0.206,
+2026-10-18T18:37:11,hourly_c0,H3 follow API bar (Tue 16-17 ET) into Wed 10:00 ET,ticks/trade gross,748,8.8222,1.954,0.668,1.848,
+2026-10-18T18:37:11,hourly_c0,H4a follow EIA bar (Wed 10-11 ET) for 11-15 ET,ticks/trade gross,839,5.1728,1.589,0.838,1.355,
+2026-10-18T18:37:11,hourly_c0,H4b fade EIA bar (Wed 10-11 ET) for 11-15 ET,ticks/trade gross,839,-5.1728,-1.589,-0.838,-1.355,
+2026-10-18T18:37:11,hourly_c1,H0 late 15-17 ET unconditional (reference),ticks/trade gross,2593,1.1142,2.321,1.822,1.5,
+2026-10-18T18:37:11,hourly_c1,H1a long late only if day up,ticks/trade gross,1314,2.8729,4.575,4.506,1.355,
+2026-10-18T18:37:11,hourly_c1,H1b late follows day direction (long up / short down),ticks/trade gross,2593,1.84,3.846,4.143,0.465,
+2026-10-18T18:37:11,hourly_c1,H2 short 06:00-09:00 ET,ticks/trade gross,2663,1.9651,2.226,1.959,1.057,
+2026-10-18T18:37:11,hourly_c1,H3 follow API bar (Tue 16-17 ET) into Wed 10:00 ET,ticks/trade gross,522,3.0211,0.873,0.897,0.202,
+2026-10-18T18:37:11,hourly_c1,H4a follow EIA bar (Wed 10-11 ET) for 11-15 ET,ticks/trade gross,532,3.4925,1.045,0.549,1.244,
+2026-10-18T18:37:11,hourly_c1,H4b fade EIA bar (Wed 10-11 ET) for 11-15 ET,ticks/trade gross,532,-3.4925,-1.045,-0.549,-1.244,
+2026-10-18T18:38:00,h1_robust,day so far: prev 18:00 -> 15:00 ET (pre-registered),ticks/trade gross,1989,2.7386,3.735,4.439,1.797,"robustness check, not selection"
+2026-10-18T18:38:00,h1_robust,NY session only: 09:00 -> 15:00 ET,ticks/trade gross,1998,2.7387,3.84,5.156,1.414,"robustness check, not selection"
+2026-10-18T18:38:00,h1_robust,overnight only: 18:00 -> 09:00 ET,ticks/trade gross,2006,2.4197,2.676,3.435,1.334,"robustness check, not selection"
+2026-10-18T18:38:01,h1_robust,last 2 hours: 13:00 -> 15:00 ET,ticks/trade gross,2011,2.1969,2.719,4.021,1.119,"robustness check, not selection"
+2026-10-18T18:38:01,h1_robust,settlement hour: 14:00 -> 15:00 ET,ticks/trade gross,1974,1.655,1.936,3.39,0.624,"robustness check, not selection"
+2026-10-18T18:38:01,h1_robust,15:00-16:00 ET only,ticks/trade gross,1989,0.3937,0.765,0.961,0.325,"robustness check, not selection"
+2026-10-18T18:38:01,h1_robust,16:00-17:00 ET only,ticks/trade gross,1989,2.3449,4.634,5.074,2.329,"robustness check, not selection"
+2026-10-18T18:38:01,h1_robust,day up by more than DEV 75th pct (74 ticks),ticks/trade gross,1072,4.2285,3.543,4.695,1.595,"robustness check, not selection"
+2026-10-18T18:43:23,h5_reopen,H5 short reopen->20:00 ET after up day,ticks/trade gross,1113,2.5067,1.933,2.996,1.125,
