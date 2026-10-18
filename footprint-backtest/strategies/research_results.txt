@@ -1,0 +1,20 @@
+18 pre-defined variants; net of 2-tick cost; 1 tick = $1/MCL
+
+mom_prevclose_to_1100->last30(16:30-17:00)                     n= 61 avg    +3.1t t=+0.98 CI[  -2.9,  +9.4] win 54% | dev   +1.1 (n30) test   +5.1 (n31) | p=0.056 Holm=1.00
+settlement_fade (15:00-15:30 -> 15:30-16:30)                   n= 64 avg    +3.1t t=+0.67 CI[  -5.6, +12.3] win 52% | dev   +2.7 (n33) test   +3.6 (n31) | p=0.141 Holm=1.00
+eia_react_FOLLOW hold5m                                        n= 14 avg    +1.4t t=+0.35 CI[  -5.7,  +9.8] win 43% | dev   +1.0 (n7) test   +1.9 (n7) | p=0.221 Holm=1.00
+eia_react_FOLLOW hold25m                                       n= 14 avg    +3.1t t=+0.25 CI[ -21.6, +24.8] win 57% | dev  +12.3 (n7) test   -6.1 (n7) | p=0.343 Holm=1.00
+eia_react_FADE hold15m                                         n= 14 avg    +1.1t t=+0.14 CI[ -13.4, +16.2] win 50% | dev   -9.0 (n7) test  +11.3 (n7) | p=0.352 Holm=1.00
+mom_eia_wed_1130->last30(16:30-17:00)                          n= 12 avg    +0.3t t=+0.04 CI[ -11.7, +11.2] win 42% | dev   -2.0 (n5) test   +1.9 (n7) | p=0.363 Holm=1.00
+mom_ny_first30->last30(16:30-17:00)                            n= 65 avg    -1.0t t=-0.31 CI[  -7.6,  +4.5] win 48% | dev   -2.1 (n33) test   +0.2 (n32) | p=0.371 Holm=1.00
+orb_pit fade OR5m (stop=OR width, out 17:00)                   n= 67 avg    -0.7t t=-0.06 CI[ -22.9, +23.7] win 22% | dev   +1.6 (n34) test   -3.1 (n33) | p=0.525 Holm=1.00
+orb_pit fade OR30m (stop=OR width, out 17:00)                  n= 67 avg    -3.3t t=-0.24 CI[ -28.7, +24.5] win 36% | dev  +13.6 (n34) test  -20.7 (n33) | p=0.595 Holm=1.00
+orb_pit follow OR5m (stop=OR width, out 17:00)                 n= 67 avg    -2.9t t=-0.25 CI[ -24.5, +22.0] win 22% | dev  -26.9 (n34) test  +21.9 (n33) | p=0.598 Holm=1.00
+orb_pit fade OR15m (stop=OR width, out 17:00)                  n= 67 avg    -3.7t t=-0.29 CI[ -26.9, +22.1] win 28% | dev  +12.6 (n34) test  -20.4 (n33) | p=0.615 Holm=1.00
+eia_react_FOLLOW hold15m                                       n= 14 avg    -5.1t t=-0.65 CI[ -20.9,  +9.1] win 43% | dev   +5.0 (n7) test  -15.3 (n7) | p=0.646 Holm=1.00
+eia_react_FADE hold25m                                         n= 14 avg    -7.1t t=-0.58 CI[ -29.6, +16.8] win 43% | dev  -16.3 (n7) test   +2.1 (n7) | p=0.664 Holm=1.00
+eia_react_FADE hold5m                                          n= 14 avg    -5.4t t=-1.31 CI[ -13.7,  +1.7] win 43% | dev   -5.0 (n7) test   -5.9 (n7) | p=0.775 Holm=1.00
+eia_prerelease_follow (11:20-11:25 -> hold to 11:40)           n= 14 avg    -8.3t t=-1.15 CI[ -21.9,  +6.1] win 43% | dev   -4.0 (n7) test  -12.6 (n7) | p=0.801 Holm=1.00
+settlement_follow (15:00-15:30 -> 15:30-16:30)                 n= 64 avg    -7.1t t=-1.53 CI[ -16.6,  +1.7] win 42% | dev   -6.7 (n33) test   -7.6 (n31) | p=0.857 Holm=1.00
+orb_pit follow OR15m (stop=OR width, out 17:00)                n= 67 avg   -12.5t t=-1.08 CI[ -34.1, +11.4] win 24% | dev  -29.0 (n34) test   +4.5 (n33) | p=0.860 Holm=1.00
+orb_pit follow OR30m (stop=OR width, out 17:00)                n= 67 avg   -16.8t t=-1.42 CI[ -38.7,  +7.3] win 27% | dev  -26.1 (n34) test   -7.2 (n33) | p=0.922 Holm=1.00
