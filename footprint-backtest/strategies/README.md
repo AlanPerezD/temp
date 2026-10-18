@@ -12,3 +12,5 @@ Rerun: `python3 strategy_lab.py` (needs the data in `../data/`, see top-level RE
 | `research_results.txt` | Output of `research_lab.py`: 18 literature-motivated daily variants (intraday momentum, EIA reaction, settlement, pit-open ORB) with CIs, dev/test, permutation p and Holm adjustment (result: nothing significant on 67 days) |
 | `oil_edges.md` | Research summary + 16-year tests of carry, trend, seasonality, index roll, EIA, COT, sessions |
 | `macro_results.txt` | Full output of `macro_lab.py` |
+| `EDGE_late_session_momentum.md` | **The edge found**: rule, evidence, economics, risks, timetable in Buenos Aires time |
+| `registry.csv` | Every hypothesis tested in the edge search (for multiple-testing correction) |

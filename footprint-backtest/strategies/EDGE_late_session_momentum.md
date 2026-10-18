@@ -25,9 +25,11 @@ Skip US holidays / early-close days.
 | HO 15-17 ET | +10.1 ticks ($43) | 3.47 | t 4.2 | t 2.3 |
 | RB 15-17 ET | +6.2 ticks ($26) | 2.98 | t 4.2 | t 1.0 |
 | CL 2nd month (2010-2020) | +2.9 ticks | 4.58 | | |
+| NG 15-17 ET (replication) | +1.6 ticks ($16) | 2.91 | t 4.0 | t 1.4 |
 | Brent on CME (thin) | +0.7 ticks | 0.8 | | |
 
-- Pre-registered on CL before seeing the other markets; then replicated on HO and RB.
+- Pre-registered on CL before seeing the other markets; then replicated on HO, RB and NG (all four
+  NYMEX energy contracts positive; NG's ~$16 gross is roughly its trading cost, so NG is confirmation only).
 - The CL last-hour version passes the family-wise bar for ~300 tests run in this search (|t| > 3.77).
 - Positive in 16 of 17 years (CL); robust to how "day up" is measured (5 definitions, t 1.9-3.8).
 - Not bid/ask bounce: on MCL tick data (Jul-Oct 2026) the move measured at the bid is +9.6 ticks
