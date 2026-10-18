@@ -13,7 +13,7 @@ import registry
 from hourly_lab import SPLIT, seg, stat
 from late_session import hourly_moves
 
-TICK = {"CL": 0.01, "BZ": 0.01, "HO": 0.0001, "RB": 0.0001}
+TICK = {"CL": 0.01, "BZ": 0.01, "HO": 0.0001, "RB": 0.0001, "NG": 0.001}
 BEFORE15 = [18, 19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
 
@@ -37,5 +37,6 @@ def run(root):
 
 
 if __name__ == "__main__":
-    for r in ("BZ", "HO", "RB"):
+    import sys
+    for r in (sys.argv[1:] or ("BZ", "HO", "RB")):
         run(r)
