@@ -73,7 +73,9 @@ def main(root, entry_min=15 * 60 + 30, exit_min=15 * 60 + 59):
             continue
         days[d] = (pre["dp"].sum(), win)
     print(f"  {len(days)} sessions with a full window; entry {entry_min//60}:{entry_min%60:02d} ET, flat {exit_min//60}:{exit_min%60:02d} ET")
-    for stop, tgt in ((12, 24), (20, 40), (30, 60)):
+    scale = {"NQ": (25, 40, 60, 80), "ES": (8, 12, 20, 30)}[root]   # stop in index POINTS
+    for pts in scale:
+        stop, tgt = int(pts / tick), int(2 * pts / tick)
         for per, lo, hi in (("2018-2022", 2018, 2022), ("2023-2026", 2023, 2026), ("2011-2017", 2011, 2017)):
             res, kinds = [], []
             for d, (sig, win) in days.items():
@@ -88,7 +90,7 @@ def main(root, entry_min=15 * 60 + 30, exit_min=15 * 60 + 59):
             kc = pd.Series(kinds).value_counts(normalize=True)
             risk_usd = stop * tv
             n_ctr = int(200 // risk_usd) if risk_usd <= 200 else 0
-            print(f"  stop {stop:2d}/target {tgt:2d} {per}: n={len(res):4d} net {res.mean():+5.2f} ticks (${res.mean()*tv:+5.2f}/micro; "
+            print(f"  stop {pts}pt/target {2*pts}pt {per}: n={len(res):4d} net {res.mean():+5.2f} ticks (${res.mean()*tv:+5.2f}/micro; "
                   f"{n_ctr} micros at $200 risk = ${res.mean()*tv*n_ctr:+6.1f}/trade) t={tstat(res):+.2f} win {(res>0).mean():.0%} | "
                   f"target {kc.get('target',0):.0%} stop {kc.get('stop',0):.0%} time {kc.get('time',0):.0%}")
             if per == "2018-2022" or per == "2023-2026":
