@@ -1,0 +1,13 @@
+52 signal variants x 3 horizons = 150 tests; events per variant: median 95
+
+Selected on DEV (t>=1.5, n>=15): 6 of 150
+  orb_fade                           H15m dev n= 33 avg  +13.8t t=2.4 | TEST n= 33 avg   -2.9t t=-0.4
+  delta_fade N5 thr0.1               H60m dev n= 35 avg  +23.0t t=2.3 | TEST n= 34 avg   +0.6t t=+0.1
+  orb_fade                           H30m dev n= 33 avg  +10.9t t=1.9 | TEST n= 33 avg   +2.4t t=+0.4
+  momentum_fade N60 x120             H30m dev n= 22 avg  +16.5t t=1.6 | TEST n= 35 avg   +8.3t t=+0.8
+  orb_fade                           H60m dev n= 33 avg  +14.3t t=1.6 | TEST n= 33 avg   +9.0t t=+0.8
+  delta_fade N5 thr0.2               H60m dev n= 77 avg  +11.2t t=1.5 | TEST n= 74 avg   -4.3t t=-0.5
+
+Observed: mean TEST avg of selected = +2.18 ticks; 4/6 positive
+Luck check (300 randomised copies): selected 3.8 combos on average by chance; their mean TEST avg = -2.26t (sd 5.25); positive share 37%
+P(luck gives >= observed mean test avg) = 0.20
