@@ -21,7 +21,7 @@ def main():
     client = db.Historical(load_key())
     stype = "continuous" if "." in a.symbol else "raw_symbol"
     years = pd.date_range(a.start, a.end, freq="YS").strftime("%Y-%m-%d").tolist()
-    bounds = [a.start] + [y for y in years if y > a.start] + [a.end]
+    bounds = [a.start] + [y for y in years if a.start < y < a.end] + [a.end]
     ranges = list(zip(bounds[:-1], bounds[1:]))
     common = dict(dataset=DATASET, symbols=[a.symbol], stype_in=stype, schema=a.schema)
     cost = sum(retry(client.metadata.get_cost, start=s, end=e, **common) for s, e in ranges)
